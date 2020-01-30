@@ -1,0 +1,14 @@
+@startuml
+
+Vaktbikkje ..> Main
+
+Network ..> Messages
+Messages ..> Main
+
+Queue ..> Selvinnsikt
+Selvinnsikt ..> Main
+
+Main <.. "I/O"
+"I/O" <.. "Elevator driver"
+
+@enduml

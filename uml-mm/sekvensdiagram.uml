@@ -1,0 +1,36 @@
+@startuml
+
+"HeisA I/O" -> HeisA: Bestillingsknapp trykkes
+
+HeisA -> HeisA: Spør alle heiser om\n kost for bestillingen
+HeisA -> HeisB
+HeisA -> HeisC
+
+HeisA <-- HeisB: Respons (kost)
+HeisA <-- HeisC
+
+HeisA -> HeisB: Sender bestillingen\n til heisen med lavest kost
+HeisA <-- HeisB: Respons (acknowledge order)
+
+HeisB -> HeisB: Be alle heiser om å skru på\n riktige bestillingslys\n (trenger ikke respons)
+HeisB -> HeisA
+HeisB -> HeisC
+
+HeisA -> HeisA: Sett opp vaktbikkje\n for ordren i alle heiser\n unntatt den som utfører bestillingen
+HeisA -> HeisC
+
+HeisA <-- HeisC: Respons (acknowledge vaktbikkje)
+
+HeisB -> HeisA: Heisen har kommet fram\n og ber de andre heisene\n om å slette vaktbikkja
+HeisB -> HeisC
+
+HeisB <-- HeisA: Respons(?)
+HeisB <-- HeisC
+
+HeisB -> HeisA: Heisen har kommet fram\n og ber de andre heisene\n om å skru av bestillingslys
+HeisB -> HeisC
+
+HeisB <-- HeisA: Respons(?)
+HeisB <-- HeisC
+
+@enduml
