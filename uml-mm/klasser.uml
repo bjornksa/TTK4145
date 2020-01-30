@@ -1,0 +1,36 @@
+@startuml
+
+Message ..> ResponseMessage
+Message ..> CommandMessage
+
+
+
+
+class Message {
+  send_to(ip, port)
+  receive()
+  broadcast(all elevators)
+
+  - serialize()
+  - parse(json)
+}
+
+class ResponseMessage {
+  message_type: {getCost, addOrder, addVaktbikkje}
+  response
+}
+
+class CommandMessage {
+  message_type: {getCost, addOrder, addVaktbikkje, removeVaktbikkje, lightsOn, lightsOff}
+  data: [floor, direction]
+}
+
+
+class Queue {
+  array orders[floor, direction]
+
+  push()
+  pop()
+}
+
+@enduml

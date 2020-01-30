@@ -1,0 +1,17 @@
+Meldinger heisene skal sende og motta:
+
+Be om kost
+Kostrespons
+
+Sende ordre
+Acknowledge ordre
+
+Skru på lys
+Skru av lys
+(Respons på at lys er skrudd av?)
+
+Skru på vaktbikkje for ordre
+Acknowledge vaktbikkje
+
+Skru av vaktibikkje for ordre
+(Respons på skru av vaktbikkje?)
