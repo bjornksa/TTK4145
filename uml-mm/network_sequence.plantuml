@@ -1,0 +1,42 @@
+@startuml Network sequence
+
+title Network messages
+
+participant HeisA as A
+participant HeisB as B
+participant HeisC as C
+
+
+
+
+
+ -> A: Bestillingsknapp trykkes
+ activate A
+
+loop
+
+    A -> A: Spør alle heiser om\n kost for bestillingen
+    A -> B
+    activate B
+    A -> C
+    activate C
+
+    A <-- A: Respons (kost)
+    A <-- B
+    A <-- C
+
+    A -> A: Broadcast order
+    A -> B
+    A -> C
+    break
+        B -> A: Broadcast order finished
+        deactivate A
+        B -> C
+        deactivate C
+        deactivate B
+
+end
+end
+
+
+@enduml
