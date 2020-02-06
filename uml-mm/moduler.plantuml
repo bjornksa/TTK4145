@@ -1,17 +1,36 @@
 @startuml modules
 
-class FSM{
-    Queue[]
+class Elevator {
+  add_order(order)
+  get_cost(order)
+  set_lamp(order)
+  clear_lamp(order)
+
+  - msg_finished_order()
+  - msg_new_order()
 }
 
-class Main
-class Network
-class I/O
-class Vaktbikkje
+class Distributor
 
-Vaktbikkje <..> Main
-Network <..> Main
-FSM <..> Main
-FSM <..> "I/O"
+class Network {
+  broadcast_cost_request()
+  send_cost()
+  broadcast_order()
+
+  - msg_cost()
+  - msg_order()
+}
+
+class I/O
+
+class Watchdog {
+  set_timer(order)
+  clear_timer(order)
+}
+
+Watchdog <..> Distributor
+Network <..> Distributor
+Elevator <..> Distributor
+Elevator <..> "I/O"
 
 @enduml
