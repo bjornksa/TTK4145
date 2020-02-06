@@ -1,0 +1,17 @@
+@startuml modules
+
+class FSM{
+    Queue[]
+}
+
+class Main
+class Network
+class I/O
+class Vaktbikkje
+
+Vaktbikkje <..> Main
+Network <..> Main
+FSM <..> Main
+FSM <..> "I/O"
+
+@enduml

@@ -1,4 +1,4 @@
-@startuml
+@startuml Sequence
 
 "HeisA I/O" -> HeisA: Bestillingsknapp trykkes
 
