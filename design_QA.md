@@ -39,7 +39,7 @@
 ## Modules
 
 -   Divide into more than network, hardware and magic box
-### UML: class diagram
+### Dusteeksempel
 ```plantuml
 @startuml classes
     class magic_box{
