@@ -1,0 +1,23 @@
+@startuml Internal elevator sequence
+!pragma teoz true
+
+title Mottar ordre fra en annen heis
+
+participant Elevator
+participant Distributor
+participant Network
+participant Watchdog
+
+Distributor <- Network: msg get_cost
+Distributor -> Elevator: get_cost()
+Distributor <-- Elevator: Respons
+Distributor -> Network: send_cost()
+
+Distributor <- Network: msg order
+Distributor -> Elevator: add_order()
+
+Distributor -> Elevator: set_lamp()
+
+
+
+@enduml

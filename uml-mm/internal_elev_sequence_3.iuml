@@ -1,0 +1,13 @@
+@startuml Internal elevator sequence
+!pragma teoz true
+
+title Watchdog utløper, sender ny kostforespørsel
+
+participant Elevator
+participant Distributor
+participant Network
+participant Watchdog
+
+Distributor <- Watchdog: msg new_order
+
+@enduml
