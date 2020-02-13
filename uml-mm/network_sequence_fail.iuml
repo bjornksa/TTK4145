@@ -1,0 +1,30 @@
+@startuml Network sequence fail
+
+title Network messages
+
+participant HeisA as A
+participant HeisB as B
+participant HeisC as C
+
+
+
+
+
+ -> A: Order button pressed
+ activate A
+
+    A -> A: Request cost for order
+    A -> B
+    activate B
+    A -> C
+    activate C
+
+
+    A <-- A: Response (cost)
+
+    deactivate A
+    deactivate B
+    deactivate C
+== No response, \nelevator probably disconnected\n Discard order ==
+
+@enduml

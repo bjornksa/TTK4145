@@ -10,18 +10,18 @@ participant HeisC as C
 
 
 
- -> A: Bestillingsknapp trykkes
+ -> A: Hall button pressed
  activate A
 
 loop watchdog timeout
 
-    A -> A: Spør alle heiser om\n kost for bestillingen
+    A -> A: Broadcast cost request
     A -> B
     activate B
     A -> C
     activate C
 
-    A <-- A: Respons (kost)
+    A <-- A: Response (cost)
     A <-- B
     A <-- C
 
