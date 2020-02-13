@@ -1,5 +1,4 @@
 @startuml Network sequence
-!pragma teoz true
 
 title Network messages
 
@@ -34,7 +33,7 @@ loop watchdog timeout
 
     A <-- B: Acknowledge order
     A <-- C
-
+    end
 
     <- A: Turn on light
     <- B
@@ -42,7 +41,7 @@ loop watchdog timeout
 
     break Order finished
         B -> A: Broadcast order finished
-        & B -> C
+        B -> C
     <- A: Turn off light
     deactivate A
     <- B
