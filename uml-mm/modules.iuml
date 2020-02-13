@@ -1,10 +1,10 @@
 @startuml modules
 
 class Elevator {
-  add_order(order)
-  get_cost(order)
-  set_lamp(order)
-  clear_lamp(order)
+  add_order()
+  get_cost()
+  set_lamp()
+  clear_lamp()
 
   - msg_order_finished()
   - msg_new_order()
@@ -26,8 +26,8 @@ class Network {
 class Elev_hardware
 
 class Watchdog {
-  set_timer(order)
-  clear_timer(order)
+  set_timer()
+  clear_timer()
 
   - msg_timer_expired()
 }

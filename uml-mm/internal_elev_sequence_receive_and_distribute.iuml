@@ -1,7 +1,7 @@
 @startuml Internal elevator sequence
 !pragma teoz true
 
-title Mottar ordre, og en annen heis har lavest kost
+title Receives new order, another elevator has lowest cost
 
 participant Elevator
 participant Distributor
@@ -12,12 +12,12 @@ Distributor <- Elevator: msg new_order
 Distributor -> Elevator: get_cost()
 Distributor -> Network: broadcast_cost_request()
 
-Distributor <-- Elevator: Respons
-Distributor <-- Network: Respons
+Distributor <-- Elevator: Response
+Distributor <-- Network: Response
 
 Distributor -> Watchdog: set_timer()
 Distributor -> Network: broadcast_order()
-Distributor <-- Network: Respons
+Distributor <-- Network: Response
 Distributor -> Elevator: set_lamp()
 
 Distributor <- Network: msg order_finished

@@ -1,13 +1,13 @@
 @startuml Internal elevator sequence
 !pragma teoz true
 
-title Watchdog utløper, sender ny kostforespørsel
+title Watchdog timer expired, initiates new cost request
 
 participant Elevator
 participant Distributor
 participant Network
 participant Watchdog
 
-Distributor <- Watchdog: msg timer_expired(order)
+Distributor <- Watchdog: msg timer_expired()
 
 @enduml

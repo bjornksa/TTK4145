@@ -1,7 +1,7 @@
 @startuml Internal elevator sequence
 !pragma teoz true
 
-title Mottar ordre fra en annen heis
+title Receiving an order from another elevator
 
 participant Elevator
 participant Distributor
@@ -10,7 +10,7 @@ participant Watchdog
 
 Distributor <- Network: msg get_cost
 Distributor -> Elevator: get_cost()
-Distributor <-- Elevator: Respons
+Distributor <-- Elevator: Response
 Distributor -> Network: send_cost()
 
 Distributor <- Network: msg order
