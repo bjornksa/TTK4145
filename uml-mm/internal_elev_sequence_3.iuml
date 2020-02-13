@@ -8,6 +8,6 @@ participant Distributor
 participant Network
 participant Watchdog
 
-Distributor <- Watchdog: msg new_order
+Distributor <- Watchdog: msg timer_expired(order)
 
 @enduml

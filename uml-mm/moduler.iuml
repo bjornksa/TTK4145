@@ -6,7 +6,7 @@ class Elevator {
   set_lamp(order)
   clear_lamp(order)
 
-  - msg_finished_order()
+  - msg_order_finished()
   - msg_new_order()
 }
 
@@ -16,9 +16,11 @@ class Network {
   broadcast_cost_request()
   send_cost()
   broadcast_order()
+  broadcast_order_finished()
 
   - msg_cost()
   - msg_order()
+  - msg_order_acknowledge()
 }
 
 class Elev_hardware
@@ -27,7 +29,7 @@ class Watchdog {
   set_timer(order)
   clear_timer(order)
 
-  - timer_expired()
+  - msg_timer_expired()
 }
 
 Watchdog <..> Distributor
