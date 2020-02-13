@@ -1,0 +1,11 @@
+{
+    "$schema": "./message_schema.json",
+    "messagetype": "request",
+    "sender_ip": "1",
+    "order":{
+        "elevator_ip": "192.168",
+        "order_floor": 2,
+        "order_type":"internal",
+        "order_dir": 1
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "additionalProperties":false,
+    "properties": {
+        "$schema":{
+            "type":"string"
+        },
+        "messagetype": {
+            "type": "string",
+            "enum": [
+                "cost_request",
+                "order",
+                "order_finished"
+            ]
+        },
+        "sender_ip":{
+            "type":"string"
+        },
+        "order": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "elevator_ip": {
+                    "type": "string"
+                },
+                "order_floor": {
+                    "type": "integer"
+                },
+                "order_type": {
+                    "type": "string"
+                },
+                "order_dir": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "elevator_ip",
+                "order_floor",
+                "order_type",
+                "order_dir"
+            ]
+        }
+    },
+    "required": [
+        "messagetype",
+        "sender_id",
+        "order"
+    ]
+}

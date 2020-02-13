@@ -1,4 +1,5 @@
 import socket
+from time import sleep
 BROADCAST_PORT = 1440
 
 def receive():
