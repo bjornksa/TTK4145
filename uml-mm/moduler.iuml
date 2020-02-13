@@ -21,7 +21,7 @@ class Network {
   - msg_order()
 }
 
-class I/O
+class Elev_hardware
 
 class Watchdog {
   set_timer(order)
@@ -33,6 +33,6 @@ class Watchdog {
 Watchdog <..> Distributor
 Network <..> Distributor
 Elevator <..> Distributor
-Elevator <..> "I/O"
+Elevator <..> Elev_hardware
 
 @enduml
