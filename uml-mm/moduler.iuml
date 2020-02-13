@@ -26,6 +26,8 @@ class I/O
 class Watchdog {
   set_timer(order)
   clear_timer(order)
+
+  - timer_expired()
 }
 
 Watchdog <..> Distributor

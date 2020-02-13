@@ -30,11 +30,11 @@ loop watchdog timeout
     loop until response
     A -> A: Broadcast order
     A -> B
-    & A -> C
+    A -> C
 
     A <-- B: Acknowledge order
     A <-- C
-    end
+
 
     <- A: Turn on light
     <- B
@@ -42,7 +42,7 @@ loop watchdog timeout
 
     break Order finished
         B -> A: Broadcast order finished
-        B -> C
+        & B -> C
     <- A: Turn off light
     deactivate A
     <- B
