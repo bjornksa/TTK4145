@@ -1,4 +1,5 @@
 @startuml Network sequence
+!pragma teoz true
 
 title Network messages
 
@@ -13,7 +14,7 @@ participant HeisC as C
  -> A: Bestillingsknapp trykkes
  activate A
 
-loop
+loop watchdog timeout
 
     A -> A: Spør alle heiser om\n kost for bestillingen
     A -> B
@@ -25,15 +26,29 @@ loop
     A <-- B
     A <-- C
 
+
+    loop until response
     A -> A: Broadcast order
     A -> B
-    A -> C
-    break
+    & A -> C
+
+    A <-- B: Acknowledge order
+    A <-- C
+    end
+
+    <- A: Turn on light
+    <- B
+    <- C
+
+    break Order finished
         B -> A: Broadcast order finished
-        deactivate A
         B -> C
-        deactivate C
+    <- A: Turn off light
+    deactivate A
+    <- B
         deactivate B
+    <- C
+        deactivate C
 
 end
 end
