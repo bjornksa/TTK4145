@@ -2,12 +2,12 @@ import ctypes
 import threading
 import time
 
-testlib = ctypes.CDLL('/home/simen/Documents/school/sanntidsprogrammering/wrapper_tester/test.so')
+testlib = ctypes.CDLL('/home/simen/Documents/school/sanntidsprogrammering/TTK4145/wrapper_tester/test.so')
 
 def notification_tester(name, t):
     while True:
-        testlib.simple_timer(t)
-        print(f'Timer {name} firing!!!')
+        count = testlib.simple_timer(t)
+        print(f'Timer {name} firing, count: {count}!!!')
 
 def main_tester():
     testlib.main()

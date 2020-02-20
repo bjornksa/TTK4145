@@ -9,10 +9,10 @@ int simple_function(void){
   return counter;
 }
 
-void simple_timer(int x){
+int simple_timer(int x){
   sleep(x);
   counter++;
-  return;
+  return counter;
 }
 
 int main(void){
