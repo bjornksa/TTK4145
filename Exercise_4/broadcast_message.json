@@ -1,6 +1,6 @@
 {
     "$schema": "./message_schema.json",
-    "messagetype": "request",
+    "messagetype": "cost_request",
     "sender_ip": "1",
     "order":{
         "elevator_ip": "192.168",
