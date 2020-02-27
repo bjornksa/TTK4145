@@ -12,7 +12,7 @@ class Counter:
     def __init__(self, current_number = 0, master = False):
         self.current_number = current_number
         self.is_master = master
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket = None
         self.IP = "127.0.0.1"
         self.PORT = 5005
 
@@ -24,6 +24,7 @@ class Counter:
             self.backup_loop()
 
     def master_loop(self):
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         while True:
             for i in range(10):
                 time.sleep(0.1)
@@ -33,6 +34,8 @@ class Counter:
 
     def backup_loop(self):
         msg_timer = Timer(1.0, self.become_master)
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
         self.socket.bind((self.IP, self.PORT))
 
         msg_timer.start()
@@ -57,8 +60,8 @@ class Counter:
 
 
     def spawn_backup(self):
-        script_path = os.path.join("/home/bjornkare/Documents/skole/TTK4145/assignments/Excercise_6/ex_6.py")
-        backup = subprocess.Popen("python3 " + script_path + " -b True", shell=True)
+        script_path = os.path.join(__file__)
+        backup = subprocess.Popen("gnome-terminal -- python3 " + script_path + " -b True", shell=True)
 
     def become_master(self):
         #self.socket.shutdown(socket.SOCK_DGRAM)
