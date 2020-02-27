@@ -9,7 +9,7 @@ procedure exercise7 is
     protected type Transaction_Manager (N : Positive) is
         entry Finished;
         function Commit return Boolean;
-        procedure Sig nal_Abort;
+        procedure Signal_Abort;
     private
         Finished_Gate_Open  : Boolean := False;
         Aborted             : Boolean := False;
@@ -44,6 +44,15 @@ procedure exercise7 is
         -------------------------------------------
         -- PART 1: Create the transaction work here
         -------------------------------------------
+        Random_Int : Float := Random(Gen);
+        Random_Delay : Integer := Random(Gen);
+        if Random_Int > Error_Rate then
+            delay Duration(Random_Delay*4);
+            return x + 10;
+        else
+            delay Duration(Random_Delay*1.5);
+            raise Count_Failed;
+
     end Unreliable_Slow_Add;
 
 
