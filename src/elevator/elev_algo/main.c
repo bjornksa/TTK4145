@@ -18,7 +18,7 @@ int main(void){
     printf("Started!\n");
 
     int inputPollRate_ms = 25;
-    con_load("/home/student/Desktop/hei/TTK4145/heistest/elev_algo/elevator.con",
+    con_load("elevator.con",
         con_val("inputPollRate_ms", &inputPollRate_ms, "%d")
     )
 
