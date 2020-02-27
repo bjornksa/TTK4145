@@ -9,7 +9,7 @@ procedure exercise7 is
     protected type Transaction_Manager (N : Positive) is
         entry Finished;
         function Commit return Boolean;
-        procedure Sig nal_Abort;
+        procedure Signal_Abort;
     private
         Finished_Gate_Open  : Boolean := False;
         Aborted             : Boolean := False;
