@@ -9,17 +9,12 @@ import argparse
 
 
 class Counter:
-
-    _current_number = None
-    _is_master = None
-    _socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    IP = "127.0.0.1"
-    PORT = 5005
-
-
     def __init__(self, current_number = 0, master = False):
         self.current_number = current_number
         self.is_master = master
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.IP = "127.0.0.1"
+        self.PORT = 5005
 
         if self.is_master:
             self.spawn_backup()
@@ -38,13 +33,22 @@ class Counter:
 
     def backup_loop(self):
         msg_timer = Timer(1.0, self.become_master)
-        self._socket.bind((self.IP, self.PORT))
+        self.socket.bind((self.IP, self.PORT))
+
         msg_timer.start()
 
+        print("This is backup speaking")
+
         while True:
-            if (self._socket.recv != None):
-                self.current_number = self._socket.recv(10)
+            if (self.socket.recv != None):
+                data = int.from_bytes(self.socket.recv(10), byteorder='big')
+                print("bu:",data)
+                self.current_number  = data
+
                 msg_timer.cancel()
+                msg_timer.join()
+
+                msg_timer = Timer(1.0, self.become_master)
                 msg_timer.start()
 
             if (not msg_timer.is_alive()):
@@ -53,19 +57,23 @@ class Counter:
 
 
     def spawn_backup(self):
-        script_path = os.path.join(os.path.dirname(__file__), "ex_6.py -b True")
-        backup = subprocess.Popen("python3 " + script_path)
+        script_path = os.path.join("/home/bjornkare/Documents/skole/TTK4145/assignments/Excercise_6/ex_6.py")
+        backup = subprocess.Popen("python3 " + script_path + " -b True", shell=True)
+
     def become_master(self):
+        #self.socket.shutdown(socket.SOCK_DGRAM)
+        self.socket.close()
         self.spawn_backup()
+        self.is_master = True
         self.master_loop()
 
     def broadcast_status(self):
-        self._socket.sendto(bytes(self.current_number), (self.IP, self.PORT))
+        self.socket.sendto(bytes([self.current_number]), (self.IP, self.PORT))
 
     def print_curr_num(self):
         print(self.current_number)
-        threads = threading.enumerate()
-        print(threads)
+        # threads = threading.enumerate()
+        # print(threads)
 
     def _increment(self):
         self.current_number += 1
@@ -79,7 +87,7 @@ def main():
     args = parser.parse_args()
 
     if args.backup:
-        counter = Counter
+        counter = Counter()
     else:
         master = Counter(master=True)
 
