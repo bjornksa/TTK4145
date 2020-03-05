@@ -40,10 +40,20 @@ procedure exercise7 is
 
     function Unreliable_Slow_Add (x : Integer) return Integer is
     Error_Rate : Constant := 0.15;  -- (between 0 and 1)
+    Random_Int : Float := Random(Gen);
+    Random_Delay : Integer := Random(Gen);
     begin
         -------------------------------------------
         -- PART 1: Create the transaction work here
         -------------------------------------------
+        if Random_Int > Error_Rate then
+            delay Duration(Random_Delay*4);
+            return x + 10;
+        else
+            delay Duration(Random_Delay*1.5);
+            raise Count_Failed;
+        end if;
+
     end Unreliable_Slow_Add;
 
 
