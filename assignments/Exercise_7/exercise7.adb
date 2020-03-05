@@ -21,6 +21,17 @@ procedure exercise7 is
             ------------------------------------------
             -- PART 3: Complete the exit protocol here
             ------------------------------------------
+            if Finished'Count > 0 then
+                Finished_Gate_Open  := True;
+                Should_Commit := not Aborted;
+            else
+                Finished_Gate_Open  := False;
+            end if;
+
+            if Finished'Count = 0 then
+                Aborted := False;
+            end if;
+
         end Finished;
 
         procedure Signal_Abort is
@@ -36,27 +47,23 @@ procedure exercise7 is
     end Transaction_Manager;
 
 
-
-
     function Unreliable_Slow_Add (x : Integer) return Integer is
     Error_Rate : Constant := 0.15;  -- (between 0 and 1)
     Random_Int : Float := Random(Gen);
-    Random_Delay : Integer := Random(Gen);
+    Random_Delay : Float := Random(Gen);
     begin
         -------------------------------------------
         -- PART 1: Create the transaction work here
         -------------------------------------------
         if Random_Int > Error_Rate then
-            delay Duration(Random_Delay*4);
+            delay Duration(Random_Delay*4.0);
             return x + 10;
         else
-            delay Duration(Random_Delay*1.5);
+            delay Duration(Random_Delay);
             raise Count_Failed;
         end if;
 
     end Unreliable_Slow_Add;
-
-
 
 
     task type Transaction_Worker (Initial : Integer; Manager : access Transaction_Manager);
@@ -74,8 +81,15 @@ procedure exercise7 is
             ---------------------------------------
             -- PART 2: Do the transaction work here
             ---------------------------------------
+            begin
+                Prev := Num;
+                Num := Unreliable_Slow_Add(Num);
+            exception
+                when Count_Failed => Manager.Signal_Abort;
+            end;
+            Manager.Finished;
 
-            if Manager.Commit = True then
+            if Manager.Commit then
                 Put_Line ("  Worker" & Integer'Image(Initial) & " comitting" & Integer'Image(Num));
             else
                 Put_Line ("  Worker" & Integer'Image(Initial) &
@@ -84,6 +98,7 @@ procedure exercise7 is
                 -------------------------------------------
                 -- PART 2: Roll back to previous value here
                 -------------------------------------------
+                Num := Prev;
             end if;
 
             Prev := Num;
