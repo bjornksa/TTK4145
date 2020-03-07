@@ -6,7 +6,6 @@
         "elevator_ip": "192.168",
         "order_floor": 2,
         "order_type":"internal",
-        "order_dir": 1,
-        "ojd":89
+        "order_dir": 1
     }
 }
