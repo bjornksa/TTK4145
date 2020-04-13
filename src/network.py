@@ -32,6 +32,7 @@ def broadcast(type, data):
 
 def receive(sock):
     data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+    # Send data to distributor
     return data
 
 # Running the network listener
