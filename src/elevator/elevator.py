@@ -4,29 +4,25 @@ import time
 import subprocess
 import os
 
-testlib = ctypes.CDLL(os.path.dirname(__file__) + 'elev_algo/ttk4145demoelevator.so')
+elevatorlib = ctypes.CDLL(os.path.dirname(__file__) + 'elev_algo/ttk4145demoelevator.so')
 
-def notification_tester(name, t):
+def elevator_test():
     while True:
-        testlib.lamp(1)
-        print(f'Timer {name} firing, count:!!')
+        elevatorlib.set_lamp(1, 0)
+        print(f'Timer firing')
         time.sleep(5)
-        testlib.lamp(0)
+        elevatorlib.clear_lamp(1, 0)
         time.sleep(5)
 
-def main_tester():
-    testlib.main()
+def elevator_main():
+    elevatorlib.mainish()
 
 if __name__ == '__main__':
-    x = threading.Thread(target=notification_tester, args=('simens tråd', 1))
-    #y = threading.Thread(target=notification_tester, args=('Erlends tråd', 4))
+    main_thread = threading.Thread(target=elevator_main)
+    test_thread = threading.Thread(target=elevator_test)
 
-    #main_tester()
-
-
-    main_thread = threading.Thread(target=main_tester)
     main_thread.start()
-    x.start()
-    #
+    test_thread.start()
+
     main_thread.join()
-    x.join()
+    test_thread.join()
