@@ -20,7 +20,9 @@ static int _wrap_requestButton(int f, Button b){
     return elevator_hardware_get_button_signal(b, f);
 }
 static void _wrap_requestButtonLight(int f, Button b, int v){
-    elevator_hardware_set_button_lamp(b, f, v);
+    if (v == 0) {
+        elevator_hardware_set_button_lamp(b, f, v);
+    }
 }
 static void _wrap_motorDirection(Dirn d){
     elevator_hardware_set_motor_direction(d);
@@ -64,9 +66,3 @@ char* elevio_button_toString(Button b){
         b == B_Cab          ? "B_Cab"           :
                               "B_UNDEFINED"     ;
 }
-
-
-
-
-
-
