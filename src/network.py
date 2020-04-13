@@ -14,7 +14,8 @@ def send(type, data, ip):
         "sender_ip": SENDER_IP,
         "data": data
     }
-    s.sendto(json.dumps(message), (ip, PRIVATE_PORT))
+    message_string = json.dumps(message)
+    s.sendto(message_string.encode(), (ip, PRIVATE_PORT))
     s.close()
 
 def broadcast(type, data):
@@ -36,6 +37,6 @@ if __name__ == "__main__":
         "button": 1
     }
     while True:
-        broadcast("cost_request", order)
+        send("cost_request", order, "10.2.192.2")
         print("sent", json.dumps(order))
         sleep(1)
