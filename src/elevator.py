@@ -16,9 +16,8 @@ def set_lamp(floor, button):
     elevatorlib.set_lamp(floor, button)
 
 def clear_lamps(floor):
-    elevatorlib.clear_lamp(floor, 0)
-    elevatorlib.clear_lamp(floor, 1)
-    elevatorlib.clear_lamp(floor, 2)
+    for i in range(0,2):
+        elevatorlib.clear_lamp(floor, i)
 
 def get_cost(floor, button):
     return elevatorlib.get_cost(floor, button)
@@ -29,13 +28,9 @@ def add_order(floor, button):
 
 # Functions supposed to be callable from elev_algo
 def new_order(floor, button):
-    # send something to distributor
-    print(f'new order {floor}, {button}')
     callbackQueue.put({'type': 'broadcast_order', 'floor': floor, 'button': button})
 
 def finished_order(floor):
-    # send something to distributor
-    print(f'finished order {floor}')
     callbackQueue.put({'type': 'broadcast_finished_order', 'floor': floor})
 
 # Make the above functions callable from c as callback functions
