@@ -30,13 +30,11 @@ def new_order(floor, button):
     # send something to distributor
     print(f'new order {floor}, {button}')
     callbackQueue.put({'type': 'new_order', 'floor': floor, 'button': button})
-    pass
 
 def finished_order(floor):
     # send something to distributor
     print(f'finished order {floor}')
     callbackQueue.put({'type': 'finished_order', 'floor': floor})
-    pass
 
 # Make the above functions callable from c as callback functions
 c_new_order = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_int)(new_order)
@@ -47,8 +45,9 @@ def elevator_runner():
     elevatorlib.run(c_new_order, c_finished_order)
 
 def elevator_callback_listener(callback, t):
-    callbackElement = callbackQueue.get(True)
-    callback(callbackElement)
+    while True:
+        callbackElement = callbackQueue.get(True)
+        callback(callbackElement)
 
 def run(callback):
     print("Elevator running")
