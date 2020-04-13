@@ -10,8 +10,8 @@ def add_to_distributor(task):
     todo.put(task)
 
 elevator.run(add_to_distributor)
-watchdog.run()
-network.run()
+watchdog.run(add_to_distributor)
+network.run(add_to_distributor)
 
 while True:
     do = todo.get(True)

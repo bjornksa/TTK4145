@@ -36,28 +36,30 @@ def receive(sock):
     return data
 
 # Running the network listener
-def listener_private():
+def listener_private(callback, t):
     receive_private_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     receive_private_socket.bind(("", PRIVATE_PORT))
 
     while True:
         data = receive(receive_private_socket)
         print("received private:", data)
+        callback(data)
         sleep(0.5)
 
 
-def listener_broadcast():
+def listener_broadcast(callback, t):
     receive_broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     receive_broadcast_socket.bind(("", BROADCAST_PORT))
 
     while True:
         data = receive(receive_broadcast_socket)
         print("received broadcast:", data)
+        callback(data)
         sleep(0.5)
 
-def run():
+def run(callback):
     print("Network running")
-    listener_private_thread = threading.Thread(target=listener_private)
-    listener_broadcast_thread = threading.Thread(target=listener_broadcast)
+    listener_private_thread = threading.Thread(target=listener_private, args=(callback, 1))
+    listener_broadcast_thread = threading.Thread(target=listener_broadcast, args=(callback, 1))
     listener_private_thread.start()
     listener_broadcast_thread.start()

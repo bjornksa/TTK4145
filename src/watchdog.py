@@ -20,24 +20,19 @@ def add_watchdog(order):
 def clear_watchdog(order):
     list[:] = [watchdog for watchdog in list if not watchdog[0] == order]
 
-# Function to talk to the distributor
-def new_order(floor, button):
-    # send something to distributor
-    print(f'watchdog expired, new order {floor}, {button}')
-
 # Running the watchdog
-def watchdog_main():
+def watchdog_main(callback, t):
     while True:
         # If time exceeds watchdog+timeout, then send out a new order
         current_time = int(time.time())
         for watchdog in list:
             timestamp = watchdog[1]
             if timestamp + timeout < current_time:
-                new_order(watchdog[0].floor, watchdog[0].button)
+                callback({'type': 'new_order', 'floor': watchdog[0].floor, 'button': watchdog[0].button})
                 clear_watchdog(watchdog[0])
         time.sleep(1)
 
-def run():
+def run(callback):
     print("Watchdog running")
-    main_thread = threading.Thread(target=watchdog_main)
+    main_thread = threading.Thread(target=watchdog_main, args=(callback, 1))
     main_thread.start()
