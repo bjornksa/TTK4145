@@ -20,7 +20,6 @@ void clear_lamp(int floor, int button) {
 }
 
 int get_cost(int floor, int button) {
-  //Elevator e_old
   Elevator e_old = fsm_getElevator();
   Button b = button;
   int f = floor;
