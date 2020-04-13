@@ -8,11 +8,12 @@ elevatorlib = ctypes.CDLL(os.path.dirname(__file__) + 'elev_algo/ttk4145demoelev
 
 def elevator_test():
     while True:
-        elevatorlib.set_lamp(1, 0)
         print(f'Timer firing')
+        cost = elevatorlib.get_cost(1,1)
+        print(f'Cost: {cost}')
         time.sleep(5)
-        elevatorlib.clear_lamp(1, 0)
-        time.sleep(5)
+        #elevatorlib.get_cost(1, 0)
+        #time.sleep(5)
 
 def elevator_main():
     elevatorlib.mainish()

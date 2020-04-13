@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "con_load.h"
-#include "elevator.h"
+//#include "elevator.h"
 #include "elevator_io_device.h"
 #include "requests.h"
 #include "timer.h"
@@ -137,4 +137,8 @@ void fsm_onDoorTimeout(void){
 
     printf("\nNew state:\n");
     elevator_print(elevator);
+}
+
+Elevator fsm_getElevator() {
+  return elevator;
 }

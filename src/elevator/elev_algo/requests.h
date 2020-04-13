@@ -9,3 +9,5 @@ Dirn requests_chooseDirection(Elevator e) __attribute__((pure));
 int requests_shouldStop(Elevator e) __attribute__((pure));
 
 Elevator requests_clearAtCurrentFloor(Elevator e) __attribute__((pure));
+
+Elevator requests_interface_clearAtCurrentFloor(Elevator e_old, void onClearedRequest(Button b, int floor));
