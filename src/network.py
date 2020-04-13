@@ -55,10 +55,9 @@ def listener_broadcast():
         print("received broadcast:", data)
         sleep(0.5)
 
-if __name__ == "__main__":
+def run():
+    print("Network running")
     listener_private_thread = threading.Thread(target=listener_private)
     listener_broadcast_thread = threading.Thread(target=listener_broadcast)
     listener_private_thread.start()
     listener_broadcast_thread.start()
-    listener_private_thread.join()
-    listener_broadcast_thread.join()

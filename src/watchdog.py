@@ -37,7 +37,7 @@ def watchdog_main():
                 clear_watchdog(watchdog[0])
         time.sleep(1)
 
-if __name__ == '__main__':
+def run():
+    print("Watchdog running")
     main_thread = threading.Thread(target=watchdog_main)
     main_thread.start()
-    main_thread.join()

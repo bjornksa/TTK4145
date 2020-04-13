@@ -3,11 +3,15 @@ import threading
 import time
 import subprocess
 import os
+import queue
 
 # Make elev_algo callable from Python
-elevatorlib = ctypes.CDLL(os.path.dirname(__file__) + 'elev_algo/ttk4145demoelevator.so')
+elevatorlib = ctypes.CDLL(os.path.dirname(__file__) + '/elev_algo/ttk4145demoelevator.so')
 
-# Wrappers for c functions in elev_algo
+# Initialize C callback queue
+callbackQueue = queue.Queue(maxsize=0)
+
+# Wrappers for C functions in elev_algo
 def set_lamp(floor, button):
     elevatorlib.set_lamp(floor, button)
 
@@ -25,11 +29,13 @@ def add_order(floor, button):
 def new_order(floor, button):
     # send something to distributor
     print(f'new order {floor}, {button}')
+    callbackQueue.put({'type': 'new_order', 'floor': floor, 'button': button})
     pass
 
 def finished_order(floor):
     # send something to distributor
     print(f'finished order {floor}')
+    callbackQueue.put({'type': 'finished_order', 'floor': floor})
     pass
 
 # Make the above functions callable from c as callback functions
@@ -37,25 +43,17 @@ c_new_order = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_int)(new_order)
 c_finished_order = ctypes.CFUNCTYPE(None, ctypes.c_int)(finished_order)
 
 # Running the elevator
-def elevator_test():
-    while True:
-        #print(f'Timer firing')
-        #add_order(1,1)
-        #time.sleep(5)
-        #add_order(3,2)
-        #time.sleep(5)
-        #add_order(2,1)
-        time.sleep(5)
-
-def elevator_main():
+def elevator_runner():
     elevatorlib.run(c_new_order, c_finished_order)
 
-if __name__ == '__main__':
-    main_thread = threading.Thread(target=elevator_main)
-    test_thread = threading.Thread(target=elevator_test)
+def elevator_callback_listener(callback, t):
+    callbackElement = callbackQueue.get(True)
+    callback(callbackElement)
 
-    main_thread.start()
-    test_thread.start()
+def run(callback):
+    print("Elevator running")
+    elevator_runner_thread = threading.Thread(target=elevator_runner)
+    elevator_callback_listener_thread = threading.Thread(target=elevator_callback_listener, args=(callback, 1))
 
-    main_thread.join()
-    test_thread.join()
+    elevator_runner_thread.start()
+    elevator_callback_listener_thread.start()
