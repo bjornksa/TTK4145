@@ -34,13 +34,6 @@ def receive(sock):
     data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
     return data
 
-def network_test():
-    while True:
-        send('cost_request', {'ip': '189.10.1', 'floor': '1', 'button': '1'}, '127.0.0.1')
-        sleep(3)
-        broadcast('order', {'ip': '029.393', 'floor': '2', 'button': '2'})
-        sleep(3)
-
 # Running the network listener
 def network_main():
     receive_private_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -54,14 +47,11 @@ def network_main():
         print("received private:", data)
 
         data = receive(receive_broadcast_socket)
-        print("received broadvast:", data)
+        print("received broadcast:", data)
 
         sleep(0.5)
 
 if __name__ == "__main__":
     main_thread = threading.Thread(target=network_main)
-    test_thread = threading.Thread(target=network_test)
     main_thread.start()
-    test_thread.start()
     main_thread.join()
-    test_thread.join()
