@@ -68,5 +68,6 @@ int get_cost(int floor, int button) {
 }
 
 void add_order(int floor, int button) {
-
+  Button btn = button;
+  fsm_onRequestButtonPress(floor, btn);
 }
