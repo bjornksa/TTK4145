@@ -39,13 +39,13 @@ c_finished_order = ctypes.CFUNCTYPE(None, ctypes.c_int)(finished_order)
 # Running the elevator
 def elevator_test():
     while True:
-        print(f'Timer firing')
-        add_order(1,1)
-        time.sleep(5)
-        add_order(3,2)
-        time.sleep(5)
-        add_order(2,1)
-        time.sleep(5)
+        #print(f'Timer firing')
+        #add_order(1,1)
+        #time.sleep(5)
+        #add_order(3,2)
+        #time.sleep(5)
+        #add_order(2,1)
+        #time.sleep(5)
 
 def elevator_main():
     elevatorlib.run(c_new_order, c_finished_order)
