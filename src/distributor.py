@@ -6,6 +6,13 @@ import threading
 import queue
 import time
 import socket
+import sys
+
+# Set elevator id by running the the script with id as the first and only argument
+elevator_id = 1
+if len(sys.argv) - 1 > 0:
+    elevator_id = sys.argv[1]
+print(f'Elevator running with id {elevator_id}.')
 
 ORDER_WATCHER_LIMIT = 0.5
 MY_IP = socket.gethostname()

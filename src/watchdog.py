@@ -3,28 +3,19 @@ import time
 from collections import namedtuple
 
 # Constant limiting how long a watchdog is kept alive. Seconds.
-timeout = 30
-
-# Order type
-Order = namedtuple('Order', 'ip floor button')
+TIMEOUT = 30
 
 # List of orders pushed to the watchdog. Each element on the form [Order, timestamp]
 list = []
 
 # Watchdog interface
 def add_watchdog(ip, floor, button):
-    order = (ip, floor, button)
     timestamp = int(time.time())
-    watchdog = [order, timestamp]
+    watchdog = [ip, floor, button, timestamp]
     list.append(watchdog)
 
-def clear_watchdog(ip, floor): #jalla
-    order = (ip, floor, 0)
-    list[:] = [watchdog for watchdog in list if not watchdog[0] == order]
-    order = (ip, floor, 1)
-    list[:] = [watchdog for watchdog in list if not watchdog[0] == order]
-    order = (ip, floor, 2)
-    list[:] = [watchdog for watchdog in list if not watchdog[0] == order]
+def clear_watchdog(ip, floor):
+    list[:] = [watchdog for watchdog in list if not (watchdog[0] == ip and watchdig[1] == floor)]
 
 # Running the watchdog
 def watchdog_main(callback, t):
@@ -33,7 +24,7 @@ def watchdog_main(callback, t):
         current_time = int(time.time())
         for watchdog in list:
             timestamp = watchdog[1]
-            if timestamp + timeout < current_time:
+            if timestamp + TIMEOUT < current_time:
                 callback({'type': 'broadcast_order', 'floor': watchdog[0].floor, 'button': watchdog[0].button})
                 clear_watchdog(watchdog[0])
         time.sleep(1)
