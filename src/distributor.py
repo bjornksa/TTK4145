@@ -9,21 +9,19 @@ import socket
 import sys
 
 # Set elevator id by running the the script with id as the first and only argument
-elevator_id = 1
+MY_ID = 1
 if len(sys.argv) - 1 > 0:
-    elevator_id = sys.argv[1]
-print(f'Elevator running with id {elevator_id}.')
+    MY_ID = sys.argv[1]
+print(f'Elevator running with id {MY_ID}.')
 
-ORDER_WATCHER_LIMIT = 0.5
 MY_IP = socket.gethostname()
-
+ORDER_WATCHER_LIMIT = 0.5
 todo = queue.Queue(maxsize=0)
+ordersNotAcknowledged = []
+ordersAndCosts = []
 
 def add_to_distributor(task):
     todo.put(task)
-
-ordersNotAcknowledged = []
-ordersAndCosts = []
 
 elevator.run(add_to_distributor)
 watchdog.run(add_to_distributor)
@@ -60,12 +58,12 @@ order_watcher_thread.start()
 
 while True:
     do = todo.get(True)
-    print(f'ddo: {do}')
+    print(f'Do: {do}')
 
     if 'sender_ip' in do: sender_ip = do['sender_ip']
-    if 'order_ip' in do:  order_ip = do['order_ip']
-    if 'floor' in do:     floor = do['floor']
-    if 'button' in do:    button = do['button']
+    if 'order_ip'  in do: order_ip = do['order_ip']
+    if 'floor'     in do: floor = do['floor']
+    if 'button'    in do: button = do['button']
 
     if do['type'] == 'broadcast_order':
         network.broadcast('cost_request', {'floor': floor, 'button': button})
@@ -74,9 +72,7 @@ while True:
         alreadyInList = False
         for element in ordersAndCosts:
             if element[0] == {floor, button}:
-                costElement = []
-                costElement.append(sender_ip)
-                costElement.append(cost)
+                costElement = [sender_ip, cost]
                 element.append(costElement)
                 alreadyInList = True
                 break
@@ -85,9 +81,7 @@ while True:
             element = []
             element.append({floor, button})
             element.append(timestamp)
-            costElement = []
-            costElement.append(sender_ip)
-            costElement.append(cost)
+            costElement = [sender_ip, cost]
             element.append(costElement)
             ordersAndCosts.append(element)
 
