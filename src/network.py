@@ -54,24 +54,10 @@ def listener_broadcast():
         print("received broadcast:", data)
         sleep(0.5)
 
-def test():
-    while True:
-        send('cost_request', 'hei', '127.0.0.1')
-        sleep(1)
-        send('cost_request', 'eh', '127.0.0.1')
-        sleep(2)
-        broadcast('hei', 'jei')
-        send('ahhha', 'heh', '127.0.0.1')
-
 if __name__ == "__main__":
     listener_private_thread = threading.Thread(target=listener_private)
     listener_broadcast_thread = threading.Thread(target=listener_broadcast)
-    test_thread = threading.Thread(target=test)
-
     listener_private_thread.start()
     listener_broadcast_thread.start()
-    test_thread.start()
-
     listener_private_thread.join()
     listener_broadcast_thread.join()
-    test_thread.join()
