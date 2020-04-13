@@ -4,8 +4,10 @@ import time
 import subprocess
 import os
 
+# Make elev_algo callable from Python
 elevatorlib = ctypes.CDLL(os.path.dirname(__file__) + 'elev_algo/ttk4145demoelevator.so')
 
+# Wrappers for c functions in elev_algo
 def set_lamp(floor, button):
     elevatorlib.set_lamp(floor, button)
 
@@ -18,6 +20,22 @@ def get_cost(floor, button):
 def add_order(floor, button):
     elevatorlib.add_order(floor, button)
 
+# Functions supposed to be callable from elev_algo
+def new_order(floor, button):
+    # send something to distributor
+    print(f'new order {floor}, {button}')
+    pass
+
+def finished_order(floor, button):
+    # send something to distributor
+    print(f'finished order {floor}, {button}')
+    pass
+
+# Make the above functions callable from c
+c_new_order = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_int)(new_order)
+c_finished_order = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_int)(finished_order)
+
+# Running the elevator
 def elevator_test():
     while True:
         #print(f'Timer firing')
@@ -37,7 +55,7 @@ def elevator_test():
         add_order(3,2)
 
 def elevator_main():
-    elevatorlib.mainish()
+    elevatorlib.run(c_new_order, c_finished_order)
 
 if __name__ == '__main__':
     main_thread = threading.Thread(target=elevator_main)

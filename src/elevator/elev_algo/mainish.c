@@ -7,8 +7,10 @@
 #include "fsm.h"
 #include "timer.h"
 
-void mainish(){
+void mainish(void* new_order(int, int), void* finished_order(int, int)){
     printf("Started!\n");
+    new_order(1,2);
+    finished_order(3,4);
 
     int inputPollRate_ms = 25;
     con_load("elevator.con",
