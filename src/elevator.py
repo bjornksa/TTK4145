@@ -45,7 +45,7 @@ def elevator_test():
         #add_order(3,2)
         #time.sleep(5)
         #add_order(2,1)
-        #time.sleep(5)
+        time.sleep(5)
 
 def elevator_main():
     elevatorlib.run(c_new_order, c_finished_order)
