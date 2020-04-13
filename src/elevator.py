@@ -15,8 +15,10 @@ callbackQueue = queue.Queue(maxsize=0)
 def set_lamp(floor, button):
     elevatorlib.set_lamp(floor, button)
 
-def clear_lamp(floor, button):
-    elevatorlib.clear_lamp(floor, button)
+def clear_lamps(floor):
+    elevatorlib.clear_lamp(floor, 0)
+    elevatorlib.clear_lamp(floor, 1)
+    elevatorlib.clear_lamp(floor, 2)
 
 def get_cost(floor, button):
     return elevatorlib.get_cost(floor, button)
@@ -29,12 +31,12 @@ def add_order(floor, button):
 def new_order(floor, button):
     # send something to distributor
     print(f'new order {floor}, {button}')
-    callbackQueue.put({'type': 'new_order', 'floor': floor, 'button': button})
+    callbackQueue.put({'type': 'broadcast_order', 'floor': floor, 'button': button})
 
 def finished_order(floor):
     # send something to distributor
     print(f'finished order {floor}')
-    callbackQueue.put({'type': 'finished_order', 'floor': floor})
+    callbackQueue.put({'type': 'broadcast_finished_order', 'floor': floor})
 
 # Make the above functions callable from c as callback functions
 c_new_order = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_int)(new_order)

@@ -12,12 +12,18 @@ Order = namedtuple('Order', 'ip floor button')
 list = []
 
 # Watchdog interface
-def add_watchdog(order):
+def add_watchdog(ip, floor, button):
+    order = (ip, floor, button)
     timestamp = int(time.time())
     watchdog = [order, timestamp]
     list.append(watchdog)
 
-def clear_watchdog(order):
+def clear_watchdog(ip, floor): #jalla
+    order = (ip, floor, 0)
+    list[:] = [watchdog for watchdog in list if not watchdog[0] == order]
+    order = (ip, floor, 1)
+    list[:] = [watchdog for watchdog in list if not watchdog[0] == order]
+    order = (ip, floor, 2)
     list[:] = [watchdog for watchdog in list if not watchdog[0] == order]
 
 # Running the watchdog
@@ -28,7 +34,7 @@ def watchdog_main(callback, t):
         for watchdog in list:
             timestamp = watchdog[1]
             if timestamp + timeout < current_time:
-                callback({'type': 'new_order', 'floor': watchdog[0].floor, 'button': watchdog[0].button})
+                callback({'type': 'broadcast_order', 'floor': watchdog[0].floor, 'button': watchdog[0].button})
                 clear_watchdog(watchdog[0])
         time.sleep(1)
 
