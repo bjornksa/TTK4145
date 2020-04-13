@@ -20,6 +20,8 @@ todo = queue.Queue(maxsize=0)
 ordersNotAcknowledged = []
 ordersAndCosts = []
 
+emptyMessage = {'sender_ip': MY_IP, 'sender_id': MY_ID}
+
 def add_to_distributor(task):
     todo.put(task)
 
@@ -42,7 +44,12 @@ def order_watcher():
                         if element[i][1] < lowest_cost:
                             lowest_cost = element[i][1]
                             lowest_cost_ip = element[i][0]
-                    network.broadcast('order', {'floor': floor, 'button': button, 'order_ip': lowest_cost_ip})
+                    message = emptyMessage
+                    message['type']     = 'order'
+                    message['floor']    = floor
+                    message['button']   = button
+                    message['order_ip'] = lowest_cost_ip
+                    network.broadcast(message)
                     flag = True
                     break #ehhh dette må fikses
             j = j + 1
@@ -66,7 +73,11 @@ while True:
     if 'button'    in do: button = do['button']
 
     if do['type'] == 'broadcast_order':
-        network.broadcast('cost_request', {'floor': floor, 'button': button})
+        message = emptyMessage
+        message['type']   = 'cost_request'
+        message['floor']  = floor
+        message['button'] = button
+        network.broadcast(message)
 
     elif do['type'] == 'receive_cost':
         alreadyInList = False
@@ -87,11 +98,20 @@ while True:
 
     elif do['type'] == 'broadcast_finished_order':
         order_ip = MY_IP
-        network.broadcast('clear_order', {'floor': floor, 'ip': order_ip})
+        message = emptyMessage
+        message['type']     = 'clear_order'
+        message['floor']    = floor
+        message['order_ip'] = order_ip
+        network.broadcast(message)
 
     elif do['type'] == 'get_cost':
         cost = elevator.get_cost(floor, button)
-        network.send(sender_ip, 'cost', {'cost': cost, 'floor': floor, 'button': button})
+        message = emptyMessage
+        message['type']   = 'cost'
+        message['floor']  = floor
+        message['button'] = button
+        message['cost']   = cost
+        network.send(sender_ip, message)
 
     elif do['type'] == 'clear_order':
         watchdog.clear_watchdog(order_ip, floor)
@@ -112,7 +132,11 @@ while True:
             if not alreadyInList:
                 ordersNotAcknowledged.append({order_ip, floor, button})
         else:
-            network.send('acknowledge_order', {'floor': floor, 'button': button}) #her er det feil
+            message = emptyMessage
+            message['type']   = 'acknowledge_order'
+            message['floor']  = floor
+            message['button'] = button
+            network.send(sender_ip, message) #her er det feil
             elevator.set_lamp(floor, button)
 
     elif do['type'] == 'acknowledge_order':

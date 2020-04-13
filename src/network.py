@@ -5,71 +5,41 @@ import threading
 import ast
 
 BROADCAST_IP = "255.255.255.255"
-SENDER_IP = socket.gethostname()
 BROADCAST_PORT = 1440
 PRIVATE_PORT = 1560
 
-def send(ip, type, data):
+def send(ip, data):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    message = {
-        "type": type,
-        "sender_ip": SENDER_IP,
-        "data": data
-    }
-    message_string = json.dumps(message)
-    s.sendto(message_string.encode(), (ip, PRIVATE_PORT))
+    data_string = json.dumps(data)
+    s.sendto(data_string.encode(), (ip, PRIVATE_PORT))
     s.close()
 
-def broadcast(type, data):
+def broadcast(data):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    message = {
-        "type": type,
-        "sender_ip": SENDER_IP,
-        "data": data
-    }
-    message_string = json.dumps(message)
-    s.sendto(message_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
+    data_string = json.dumps(data)
+    s.sendto(data_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
     s.close()
 
 def callback_wrapper(data, callback):
     data = ast.literal_eval(data.decode('utf-8'))
-    print(data)
+    callback_data = data
     if data['type'] == 'cost_request':
-        callback_data = {'type':     'get_cost',
-                        'sender_ip': data['sender_ip'],
-                        'floor':     data['data']['floor'],
-                        'button':    data['data']['button']
-                        }
+        callback_data['type'] = 'get_cost'
 
     elif data['type'] == 'order':
-        callback_data = {'type':    'add_order_or_watchdog',
-                        'order_ip': data['data']['order_ip'],
-                        'floor':    data['data']['floor'],
-                        'button':   data['data']['button']
-                        }
+        callback_data['type'] = 'add_order_or_watchdog'
 
     elif data['type'] == 'clear_order':
-        callback_data = {'type':    'clear_order',
-                        'order_ip': data['data']['ip'],
-                        'floor':    data['data']['floor']
-                        }
+        callback_data['type'] = 'clear_order'
 
     elif data['type'] == 'cost':
-        callback_data = {'type':  'receive_cost',
-                        'cost':   data['data']['cost'],
-                        'floor':  data['data']['floor'],
-                        'button': data['data']['button']
-                        }
+        callback_data['type'] = 'receive_cost'
 
-    elif data['type'] == 'order_acknowledge':
-        callback_data = {'type':  'acknowledge_order',
-                        'floor':  data['data']['floor'],
-                        'button': data['data']['button']
-                        }
+    elif data['type'] == 'acknowledge_order':
+        callback_data['type'] = 'acknowledge_order'
 
     callback(callback_data)
-
 
 def receive(sock):
     data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
