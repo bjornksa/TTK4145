@@ -26,33 +26,25 @@ def new_order(floor, button):
     print(f'new order {floor}, {button}')
     pass
 
-def finished_order(floor, button):
+def finished_order(floor):
     # send something to distributor
-    print(f'finished order {floor}, {button}')
+    print(f'finished order {floor}')
     pass
 
-# Make the above functions callable from c
+# Make the above functions callable from c as callback functions
 c_new_order = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_int)(new_order)
-c_finished_order = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_int)(finished_order)
+c_finished_order = ctypes.CFUNCTYPE(None, ctypes.c_int)(finished_order)
 
 # Running the elevator
 def elevator_test():
     while True:
-        #print(f'Timer firing')
-        #elevatorlib.add_order(1,1)
-        #time.sleep(5)
-        #elevatorlib.add_order(3,2)
-        #time.sleep(5)
-        set_lamp(2,2)
-        time.sleep(3)
-        clear_lamp(2,2)
-        time.sleep(3)
-        cost = get_cost(3,1)
-        print(f'Cost {cost}')
-        time.sleep(3)
-        add_order(1,1)
+        print(f'Timer firing')
+        elevatorlib.add_order(1,1)
         time.sleep(5)
-        add_order(3,2)
+        elevatorlib.add_order(3,2)
+        time.sleep(5)
+        elevatorlib.add_order(2,1)
+        time.sleep(5)
 
 def elevator_main():
     elevatorlib.run(c_new_order, c_finished_order)

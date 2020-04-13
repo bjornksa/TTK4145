@@ -7,10 +7,10 @@
 #include "fsm.h"
 #include "timer.h"
 
-void mainish(void* new_order(int, int), void* finished_order(int, int)){
+void mainish(void* new_order(int, int), void* finished_order(int)){
     printf("Started!\n");
     new_order(1,2);
-    finished_order(3,4);
+    finished_order(3);
 
     int inputPollRate_ms = 25;
     con_load("elevator.con",
@@ -30,7 +30,8 @@ void mainish(void* new_order(int, int), void* finished_order(int, int)){
                 for(int b = 0; b < N_BUTTONS; b++){
                     int v = input.requestButton(f, b);
                     if(v  &&  v != prev[f][b]){
-                        fsm_onRequestButtonPress(f, b);
+                        //fsm_onRequestButtonPress(f, b);
+                        new_order(f, b);
                     }
                     prev[f][b] = v;
                 }
@@ -41,7 +42,7 @@ void mainish(void* new_order(int, int), void* finished_order(int, int)){
             static int prev;
             int f = input.floorSensor();
             if(f != -1  &&  f != prev){
-                fsm_onFloorArrival(f);
+                fsm_onFloorArrival(f, finished_order);
             }
             prev = f;
         }

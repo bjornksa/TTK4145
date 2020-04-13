@@ -7,7 +7,7 @@
 #define TRAVEL_TIME 2
 #define DOOR_OPEN_TIME 3
 
-void run(void* new_order(int, int), void* finished_order(int, int)) {
+void run(void* new_order(int, int), void* finished_order(int)) {
   mainish(new_order, finished_order);
 }
 

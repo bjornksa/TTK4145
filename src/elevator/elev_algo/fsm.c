@@ -83,7 +83,7 @@ void fsm_onRequestButtonPress(int btn_floor, Button btn_type){
 
 
 
-void fsm_onFloorArrival(int newFloor){
+void fsm_onFloorArrival(int newFloor, void* finished_order(int)){
     printf("\n\n%s(%d)\n", __FUNCTION__, newFloor);
     elevator_print(elevator);
 
@@ -97,6 +97,7 @@ void fsm_onFloorArrival(int newFloor){
             outputDevice.motorDirection(D_Stop);
             outputDevice.doorLight(1);
             elevator = requests_clearAtCurrentFloor(elevator);
+            finished_order(elevator.floor);
             timer_start(elevator.config.doorOpenDuration_s);
             setAllLights(elevator);
             elevator.behaviour = EB_DoorOpen;
