@@ -15,7 +15,7 @@ if len(sys.argv) - 1 > 0:
 print(f'Elevator running with id {MY_ID}.')
 
 MY_IP = socket.gethostname()
-ORDER_WATCHER_LIMIT = 0.5
+ORDER_WATCHER_LIMIT = 1
 todo = queue.Queue(maxsize=0)
 ordersNotAcknowledged = []
 ordersAndCosts = []
@@ -35,19 +35,22 @@ def order_watcher():
         popList = []
         for element in ordersAndCosts:
             if element['timestamp'] + ORDER_WATCHER_LIMIT < current_time:
+                print()
                 print("TIDA ER UTE")
+                print(element)
                 if len(element['costs']) > 0:
-                    lowest_cost = 0
+                    lowest_cost = 1000
                     for costElement in element['costs']:
-                        lowest_cost = costElement['cost']
-                        lowest_cost_elevator_id = costElement['sender_id']
-                        print(lowest_cost)
-                        print(lowest_cost_elevator_id)
+                        if costElement['cost'] < lowest_cost:
+                            lowest_cost = costElement['cost']
+                            lowest_cost_elevator_id = costElement['sender_id']
+                    print(f'lowest cost: {lowest_cost}, id: {lowest_cost_elevator_id}')
+                    print()
                     message = emptyMessage
-                    message['type']     = 'order'
-                    message['floor']    = element['order']['floor']
-                    message['button']   = element['order']['button']
-                    message['sender_id'] = lowest_cost_elevator_id
+                    message['type']              = 'order'
+                    message['floor']             = element['order']['floor']
+                    message['button']            = element['order']['button']
+                    message['order_elevator_id'] = lowest_cost_elevator_id
                     network.broadcast(message)
                     popList.append(element)
         ordersAndCosts = [element for element in ordersAndCosts if element not in popList]
@@ -61,11 +64,11 @@ while True:
     do = todo.get(True)
     print(f'Do: {do}')
 
-    if 'sender_ip' in do: sender_ip = do['sender_ip']
-    if 'sender_id' in do: sender_id = do['sender_id']
+    if 'sender_ip'          in do: sender_ip = do['sender_ip']
+    if 'sender_id'          in do: sender_id = do['sender_id']
     if 'order_elevator_id'  in do: order_elevator_id = do['order_elevator_id']
-    if 'floor'     in do: floor = do['floor']
-    if 'button'    in do: button = do['button']
+    if 'floor'              in do: floor = do['floor']
+    if 'button'             in do: button = do['button']
 
     if do['type'] == 'broadcast_order':
         message = emptyMessage
@@ -75,6 +78,7 @@ while True:
         network.broadcast(message)
 
     elif do['type'] == 'receive_cost':
+        cost = do['cost']
         isInList = False
         for element in ordersAndCosts:
             if element['order']['floor'] == floor and element['order']['button'] == button:
@@ -88,8 +92,8 @@ while True:
 
     elif do['type'] == 'broadcast_finished_order':
         message = emptyMessage
-        message['type']     = 'clear_order'
-        message['floor']    = floor
+        message['type']              = 'clear_order'
+        message['floor']             = floor
         message['order_elevator_id'] = MY_ID
         network.broadcast(message)
 

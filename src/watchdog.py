@@ -1,6 +1,5 @@
 import threading
 import time
-from collections import namedtuple
 
 # Constant limiting how long a watchdog is kept alive. Seconds.
 TIMEOUT = 30
@@ -9,13 +8,13 @@ TIMEOUT = 30
 list = []
 
 # Watchdog interface
-def add_watchdog(ip, floor, button):
+def add_watchdog(id, floor, button):
     timestamp = int(time.time())
-    watchdog = [ip, floor, button, timestamp]
+    watchdog = {'id': id, 'floor': floor, 'button': button, 'timestamp': timestamp}
     list.append(watchdog)
 
-def clear_watchdog(ip, floor):
-    list[:] = [watchdog for watchdog in list if not (watchdog[0] == ip and watchdig[1] == floor)]
+def clear_watchdog(id, floor):
+    list[:] = [watchdog for watchdog in list if not (watchdog['id'] == id and watchdog['floor'] == floor)]
 
 # Running the watchdog
 def watchdog_main(callback, t):
@@ -23,10 +22,12 @@ def watchdog_main(callback, t):
         # If time exceeds watchdog+timeout, then send out a new order
         current_time = int(time.time())
         for watchdog in list:
-            timestamp = watchdog[1]
-            if timestamp + TIMEOUT < current_time:
-                callback({'type': 'broadcast_order', 'floor': watchdog[0]['floor'], 'button': watchdog[0]['button']})
-                clear_watchdog(watchdog[0])
+            if watchdog['timestamp'] + TIMEOUT < current_time:
+                print()
+                print('WATCHDOG TIMEOUT')
+                print()
+                callback({'type': 'broadcast_order', 'floor': watchdog['floor'], 'button': watchdog['button']})
+                clear_watchdog(watchdog['id'], watchdog['floor'])
         time.sleep(1)
 
 def run(callback):
