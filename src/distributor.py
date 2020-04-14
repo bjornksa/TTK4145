@@ -20,7 +20,7 @@ MY_IP = s.getsockname()[0]
 s.close()
 
 # Time to wait for cost from other elevators. In seconds.
-ORDER_WATCHER_LIMIT = 1
+ORDER_WATCHER_LIMIT = 0.2
 
 todo = queue.Queue(maxsize=0)
 ordersNotAcknowledged = []
@@ -56,7 +56,7 @@ def order_watcher():
                                         })
                     popList.append(element)
         ordersAndCosts = [element for element in ordersAndCosts if element not in popList]
-        time.sleep(0.1)
+        time.sleep(ORDER_WATCHER_LIMIT/2)
 
 
 order_watcher_thread = threading.Thread(target=order_watcher)
