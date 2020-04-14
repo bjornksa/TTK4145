@@ -139,6 +139,8 @@ while True:
             watchdog.add_watchdog(order_elevator_id, floor, button)
 
         if sender_id == MY_ID:
+            if order_elevator_id == MY_ID:
+                watchdog.add_watchdog(order_elevator_id, floor, button)
             isInList = False
             for order in ordersNotAcknowledged:
                 if order == {'order_elevator_id': order_elevator_id, 'floor': floor, 'button': button}:
