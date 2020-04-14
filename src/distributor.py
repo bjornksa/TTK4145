@@ -117,7 +117,7 @@ while True:
         network.send(sender_ip, message)
 
     elif do['type'] == 'clear_order':
-        watchdog.clear_watchdog(order_elevator_id, floor, button)
+        watchdog.clear_watchdog(order_elevator_id, floor)
         elevator.clear_lamps(floor)
 
     elif do['type'] == 'add_order_or_watchdog':
