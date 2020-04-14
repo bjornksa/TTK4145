@@ -9,7 +9,7 @@ BROADCAST_PORT = 1440
 PRIVATE_PORT = 1560
 
 NUMBER_OF_SENDS_MIN = 1
-NUMBER_OF_SENDS_MAX = 5
+NUMBER_OF_SENDS_MAX = 10
 
 def send(ip, data):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -26,7 +26,7 @@ def broadcast(data):
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     data_string = json.dumps(data)
     number_of_sends = NUMBER_OF_SENDS_MIN
-    if data['type'] == 'acknowledge_order' or data['type'] == 'broadcast_finished_order':
+    if data['type'] == 'acknowledge_order' or data['type'] == 'clear_order':
         number_of_sends = NUMBER_OF_SENDS_MAX
     for i in range(0, number_of_sends):
         s.sendto(data_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
