@@ -73,6 +73,12 @@ while True:
     if 'button'             in do: button = do['button']
 
     if do['type'] == 'broadcast_cost_request':
+        # Insert new element into cost list
+        ordersAndCosts[:] = [element for element in ordersAndCosts if not (element['order']['floor'] == floor and element['order']['button'] == button)]
+        timestamp = int(time.time())
+        element = {'order': {'floor': floor, 'button': button}, 'timestamp': timestamp, 'costs': []}
+        ordersAndCosts.append(element)
+
         message = emptyMessage.copy()
         message['type']   = 'cost_request'
         message['floor']  = floor
@@ -90,16 +96,10 @@ while True:
 
     elif do['type'] == 'receive_cost':
         cost = do['cost']
-        isInList = False
         for element in ordersAndCosts:
             if element['order']['floor'] == floor and element['order']['button'] == button:
                 element['costs'].append({'sender_id': sender_id, 'cost': cost})
-                isInList = True
                 break
-        if not isInList:
-            timestamp = int(time.time())
-            element = {'order': {'floor': floor, 'button': button}, 'timestamp': timestamp, 'costs': [{'sender_id': sender_id, 'cost': cost}]}
-            ordersAndCosts.append(element)
 
     elif do['type'] == 'broadcast_finished_order':
         message = emptyMessage.copy()
