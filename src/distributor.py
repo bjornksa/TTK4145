@@ -36,7 +36,7 @@ def order_watcher():
         for element in ordersAndCosts:
             if element['timestamp'] + ORDER_WATCHER_LIMIT < current_time:
                 print()
-                print("TIDA ER UTE")
+                print("SAMMENLIGNER KOST OG BROADCASTER ORDREN")
                 print(f'Costs: {element}')
                 print()
                 if len(element['costs']) > 0:
@@ -50,14 +50,6 @@ def order_watcher():
                                         'button': element['order']['button'],
                                         'order_elevator_id': lowest_cost_elevator_id
                                         })
-                    '''
-                    message = emptyMessage.copy()
-                    message['type']              = 'order'
-                    message['floor']             = element['order']['floor']
-                    message['button']            = element['order']['button']
-                    message['order_elevator_id'] = lowest_cost_elevator_id
-                    network.broadcast(message)
-                    '''
                     popList.append(element)
         ordersAndCosts = [element for element in ordersAndCosts if element not in popList]
         time.sleep(0.1)

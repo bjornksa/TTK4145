@@ -59,6 +59,7 @@ void fsm_onRequestButtonPress(int btn_floor, Button btn_type){
 
     case EB_DoorOpen:
         if(elevator.floor == btn_floor){
+            fsm_set_finished_order_at_idle_flag();
             timer_start(elevator.config.doorOpenDuration_s);
         } else {
             elevator.requests[btn_floor][btn_type] = 1;

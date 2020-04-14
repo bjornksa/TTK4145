@@ -16,7 +16,7 @@ def set_lamp(floor, button):
     elevatorlib.set_lamp(floor, button)
 
 def clear_lamps(floor):
-    for i in range(0,2):
+    for i in range(0,3):
         elevatorlib.clear_lamp(floor, i)
 
 def get_cost(floor, button):
