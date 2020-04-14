@@ -9,7 +9,7 @@ BROADCAST_PORT = 1440
 PRIVATE_PORT = 1560
 
 NUMBER_OF_SENDS_MIN = 1
-NUMBER_OF_SENDS_MAX = 10
+NUMBER_OF_SENDS_MAX = 20
 
 def send(ip, data):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -30,6 +30,7 @@ def broadcast(data):
         number_of_sends = NUMBER_OF_SENDS_MAX
     for i in range(0, number_of_sends):
         s.sendto(data_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
+        sleep(1/20) # spre meldingene over 1 sekund
     s.close()
 
 def callback_wrapper(data, callback):
@@ -64,7 +65,7 @@ def listener_private(callback, t):
 
     while True:
         data = receive(receive_private_socket)
-        print("received private: ", data)
+        #print("received private: ", data)
         callback_wrapper(data, callback)
         sleep(0.01)
 
@@ -75,7 +76,7 @@ def listener_broadcast(callback, t):
 
     while True:
         data = receive(receive_broadcast_socket)
-        print("received broadcast: ", data)
+        #print("received broadcast: ", data)
         callback_wrapper(data, callback)
         sleep(0.01)
 
