@@ -26,7 +26,10 @@ def watchdog_main(callback, t):
                 print()
                 print('WATCHDOG TIMEOUT')
                 print()
-                callback({'type': 'broadcast_cost_request', 'floor': watchdog['floor'], 'button': watchdog['button']})
+                if watchdog['button'] == 2: # Cab order
+                    callback({'type': 'broadcast_order', 'floor': watchdog['floor'], 'button': watchdog['button'], 'order_elevator_id': watchdog['id']})
+                else:
+                    callback({'type': 'broadcast_cost_request', 'floor': watchdog['floor'], 'button': watchdog['button']})
                 clear_watchdog(watchdog['id'], watchdog['floor'])
         time.sleep(1)
 

@@ -29,7 +29,7 @@ def add_order(floor, button):
 # Functions supposed to be callable from elev_algo
 def new_order(floor, button):
     if button == 2: # Cab order
-        add_order(floor, button)
+        callbackQueue.put({'type': 'broadcast_order', 'floor': floor, 'button': button, 'order_elevator_id': 'MY_ID'})
     else:
         callbackQueue.put({'type': 'broadcast_cost_request', 'floor': floor, 'button': button})
 

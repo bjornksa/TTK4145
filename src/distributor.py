@@ -45,12 +45,19 @@ def order_watcher():
                         if costElement['cost'] < lowest_cost:
                             lowest_cost = costElement['cost']
                             lowest_cost_elevator_id = costElement['sender_id']
+                    add_to_distributor({'type': 'broadcast_order',
+                                        'floor': element['order']['floor'],
+                                        'button': element['order']['button'],
+                                        'order_elevator_id': lowest_cost_elevator_id
+                                        })
+                    '''
                     message = emptyMessage.copy()
                     message['type']              = 'order'
                     message['floor']             = element['order']['floor']
                     message['button']            = element['order']['button']
                     message['order_elevator_id'] = lowest_cost_elevator_id
                     network.broadcast(message)
+                    '''
                     popList.append(element)
         ordersAndCosts = [element for element in ordersAndCosts if element not in popList]
         time.sleep(0.1)
@@ -74,6 +81,15 @@ while True:
         message['type']   = 'cost_request'
         message['floor']  = floor
         message['button'] = button
+        network.broadcast(message)
+
+    elif do['type'] == 'broadcast_order':
+        if order_elevator_id == 'MY_ID': order_elevator_id = MY_ID
+        message = emptyMessage.copy()
+        message['type']              = 'order'
+        message['floor']             = floor
+        message['button']            = button
+        message['order_elevator_id'] = order_elevator_id
         network.broadcast(message)
 
     elif do['type'] == 'receive_cost':
@@ -129,7 +145,8 @@ while True:
             message['floor']  = floor
             message['button'] = button
             network.send(sender_ip, message)
-            elevator.set_lamp(floor, button)
+            if button != 2:
+                elevator.set_lamp(floor, button)
 
     elif do['type'] == 'acknowledge_order':
             isInList = False
