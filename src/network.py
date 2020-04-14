@@ -11,14 +11,16 @@ PRIVATE_PORT = 1560
 def send(ip, data):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     data_string = json.dumps(data)
-    s.sendto(data_string.encode(), (ip, PRIVATE_PORT))
+    for i in range(0,5):
+        s.sendto(data_string.encode(), (ip, PRIVATE_PORT))
     s.close()
 
 def broadcast(data):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     data_string = json.dumps(data)
-    s.sendto(data_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
+    for i in range(0,5):
+        s.sendto(data_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
     s.close()
 
 def callback_wrapper(data, callback):
