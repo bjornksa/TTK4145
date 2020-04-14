@@ -43,6 +43,9 @@ void mainish(int portOffset, void* new_order(int, int), void* finished_order(int
             int f = input.floorSensor();
             if(f != -1  &&  f != prev){
                 fsm_onFloorArrival(f, finished_order);
+            } else if (f != -1 && f == prev && fsm_check_finished_order_at_idle_flag()) {
+                finished_order(f);
+                fsm_clear_finished_order_at_idle_flag();
             }
             prev = f;
         }
