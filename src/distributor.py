@@ -14,7 +14,11 @@ if len(sys.argv) - 1 > 0:
     MY_ID = sys.argv[1]
 print(f'Elevator running with id {MY_ID}.')
 
-MY_IP = socket.gethostname()
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+MY_IP = s.getsockname()[0]
+s.close()
+
 ORDER_WATCHER_LIMIT = 1
 todo = queue.Queue(maxsize=0)
 ordersNotAcknowledged = []
