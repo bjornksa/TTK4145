@@ -147,14 +147,14 @@ while True:
             if not isInList:
                 ordersNotAcknowledged.append({'order_elevator_id': order_elevator_id, 'floor': floor, 'button': button})
 
-    elif do['type'] == 'acknowledge_order':
+    elif do['type'] == 'acknowledge_order': # receive ack
         isInList = False
         i = 0
         for order in ordersNotAcknowledged:
             if order == {'order_elevator_id': order_elevator_id, 'floor': floor, 'button': button}:
                 if order_elevator_id == MY_ID:
                     elevator.add_order(floor, button)
-                else:
+                elif button != 2:
                     elevator.set_lamp(floor, button)
                 isInList = True
                 break
