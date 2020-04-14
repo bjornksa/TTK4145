@@ -23,9 +23,7 @@ def watchdog_main(callback, t):
         current_time = int(time.time())
         for watchdog in list:
             if watchdog['timestamp'] + TIMEOUT < current_time:
-                print()
                 print('WATCHDOG TIMEOUT')
-                print()
                 if watchdog['button'] == 2: # Cab order
                     callback({'type': 'broadcast_order', 'floor': watchdog['floor'], 'button': watchdog['button'], 'order_elevator_id': watchdog['id']})
                 else:
@@ -34,6 +32,5 @@ def watchdog_main(callback, t):
         time.sleep(1)
 
 def run(callback):
-    print("Watchdog running")
     main_thread = threading.Thread(target=watchdog_main, args=(callback, 1))
     main_thread.start()

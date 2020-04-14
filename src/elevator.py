@@ -51,7 +51,6 @@ def elevator_callback_listener(callback, t):
         callback(callbackElement)
 
 def run(elevator_id, callback):
-    print("Elevator running")
     elevator_runner_thread = threading.Thread(target=elevator_runner, args=(elevator_id, 1))
     elevator_callback_listener_thread = threading.Thread(target=elevator_callback_listener, args=(callback, 1))
 

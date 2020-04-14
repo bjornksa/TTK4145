@@ -69,7 +69,6 @@ def listener_broadcast(callback, t):
         sleep(0.5)
 
 def run(callback):
-    print("Network running")
     listener_private_thread = threading.Thread(target=listener_private, args=(callback, 1))
     listener_broadcast_thread = threading.Thread(target=listener_broadcast, args=(callback, 1))
     listener_private_thread.start()
