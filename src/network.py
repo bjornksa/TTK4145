@@ -8,7 +8,7 @@ BROADCAST_IP = "255.255.255.255"
 BROADCAST_PORT = 1440
 PRIVATE_PORT = 1560
 
-SEND_NUMBER = 3
+SEND_NUMBER = 1
 
 def send(ip, data):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -59,7 +59,7 @@ def listener_private(callback, t):
         data = receive(receive_private_socket)
         #print("received private: ", data)
         callback_wrapper(data, callback)
-        sleep(0.5)
+        sleep(0.01)
 
 def listener_broadcast(callback, t):
     receive_broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -70,7 +70,7 @@ def listener_broadcast(callback, t):
         data = receive(receive_broadcast_socket)
         #print("received broadcast: ", data)
         callback_wrapper(data, callback)
-        sleep(0.5)
+        sleep(0.01)
 
 def run(callback):
     listener_private_thread = threading.Thread(target=listener_private, args=(callback, 1))
