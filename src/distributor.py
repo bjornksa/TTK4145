@@ -35,11 +35,14 @@ def order_watcher():
         popList = []
         for element in ordersAndCosts:
             if element['timestamp'] + ORDER_WATCHER_LIMIT < current_time:
+                print("TIDA ER UTE")
                 if len(element['costs']) > 0:
                     lowest_cost = 0
                     for costElement in element['costs']:
                         lowest_cost = costElement['cost']
                         lowest_cost_elevator_id = costElement['sender_id']
+                        print(lowest_cost)
+                        print(lowest_cost_elevator_id)
                     message = emptyMessage
                     message['type']     = 'order'
                     message['floor']    = element['order']['floor']

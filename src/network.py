@@ -48,6 +48,7 @@ def receive(sock):
 # Running the network listeners
 def listener_private(callback, t):
     receive_private_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    receive_private_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     receive_private_socket.bind(("", PRIVATE_PORT))
 
     while True:
@@ -58,6 +59,7 @@ def listener_private(callback, t):
 
 def listener_broadcast(callback, t):
     receive_broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    receive_broadcast_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     receive_broadcast_socket.bind(("", BROADCAST_PORT))
 
     while True:

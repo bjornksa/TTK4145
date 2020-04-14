@@ -25,7 +25,7 @@ def watchdog_main(callback, t):
         for watchdog in list:
             timestamp = watchdog[1]
             if timestamp + TIMEOUT < current_time:
-                callback({'type': 'broadcast_order', 'floor': watchdog[0].floor, 'button': watchdog[0].button})
+                callback({'type': 'broadcast_order', 'floor': watchdog[0]['floor'], 'button': watchdog[0]['button']})
                 clear_watchdog(watchdog[0])
         time.sleep(1)
 
