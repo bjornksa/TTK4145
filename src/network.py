@@ -8,10 +8,12 @@ BROADCAST_IP = "255.255.255.255"
 BROADCAST_PORT = 1440
 PRIVATE_PORT = 1560
 
+SEND_NUMBER = 3
+
 def send(ip, data):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     data_string = json.dumps(data)
-    for i in range(0,5):
+    for i in range(0,SEND_NUMBER):
         s.sendto(data_string.encode(), (ip, PRIVATE_PORT))
     s.close()
 
@@ -19,7 +21,7 @@ def broadcast(data):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     data_string = json.dumps(data)
-    for i in range(0,5):
+    for i in range(0,SEND_NUMBER):
         s.sendto(data_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
     s.close()
 
