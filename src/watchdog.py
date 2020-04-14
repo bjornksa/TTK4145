@@ -13,8 +13,8 @@ def add_watchdog(id, floor, button):
     watchdog = {'id': id, 'floor': floor, 'button': button, 'timestamp': timestamp}
     list.append(watchdog)
 
-def clear_watchdog(id, floor):
-    list[:] = [watchdog for watchdog in list if not (watchdog['id'] == id and watchdog['floor'] == floor)]
+def clear_watchdog(id, floor, button):
+    list[:] = [watchdog for watchdog in list if not (watchdog['id'] == id and watchdog['floor'] == floor and watchdog['button'] == button)]
 
 # Running the watchdog
 def watchdog_main(callback, t):
@@ -28,7 +28,7 @@ def watchdog_main(callback, t):
                     callback({'type': 'broadcast_order', 'floor': watchdog['floor'], 'button': watchdog['button'], 'order_elevator_id': watchdog['id']})
                 else:
                     callback({'type': 'broadcast_cost_request', 'floor': watchdog['floor'], 'button': watchdog['button']})
-                clear_watchdog(watchdog['id'], watchdog['floor'])
+                clear_watchdog(watchdog['id'], watchdog['floor'], watchdog['button'])
         time.sleep(1)
 
 def run(callback):
