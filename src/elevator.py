@@ -38,17 +38,18 @@ c_new_order = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_int)(new_order)
 c_finished_order = ctypes.CFUNCTYPE(None, ctypes.c_int)(finished_order)
 
 # Running the elevator
-def elevator_runner():
-    elevatorlib.run(c_new_order, c_finished_order)
+def elevator_runner(port_offset, t):
+    c_port_offset = ctypes.c_int(int(port_offset))
+    elevatorlib.run(c_port_offset, c_new_order, c_finished_order)
 
 def elevator_callback_listener(callback, t):
     while True:
         callbackElement = callbackQueue.get(True)
         callback(callbackElement)
 
-def run(callback):
+def run(elevator_id, callback):
     print("Elevator running")
-    elevator_runner_thread = threading.Thread(target=elevator_runner)
+    elevator_runner_thread = threading.Thread(target=elevator_runner, args=(elevator_id, 1))
     elevator_callback_listener_thread = threading.Thread(target=elevator_callback_listener, args=(callback, 1))
 
     elevator_runner_thread.start()

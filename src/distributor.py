@@ -24,7 +24,7 @@ emptyMessage = {'sender_ip': MY_IP, 'sender_id': MY_ID}
 def add_to_distributor(task):
     todo.put(task)
 
-elevator.run(add_to_distributor)
+elevator.run(MY_ID, add_to_distributor)
 watchdog.run(add_to_distributor)
 network.run(add_to_distributor)
 

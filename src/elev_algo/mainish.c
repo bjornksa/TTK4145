@@ -3,11 +3,13 @@
 #include <unistd.h>
 
 #include "con_load.h"
+#include "driver/elevator_hardware.h"
 #include "elevator_io_device.h"
 #include "fsm.h"
 #include "timer.h"
 
-void mainish(void* new_order(int, int), void* finished_order(int)){
+void mainish(int portOffset, void* new_order(int, int), void* finished_order(int)){
+    elevator_hardware_init(portOffset);
     printf("C elevator started\n");
 
     int inputPollRate_ms = 25;
