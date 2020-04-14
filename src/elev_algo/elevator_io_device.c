@@ -12,9 +12,9 @@
 
 
 
-static void __attribute__((constructor)) elev_init(void){
-    elevator_hardware_init();
-}
+/*static void __attribute__((constructor)) elev_init(int portOffset){
+    elevator_hardware_init(portOffset);
+}*/
 
 static int _wrap_requestButton(int f, Button b){
     return elevator_hardware_get_button_signal(b, f);

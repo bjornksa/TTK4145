@@ -7,8 +7,8 @@
 #define TRAVEL_TIME 2
 #define DOOR_OPEN_TIME 3
 
-void run(void* new_order(int, int), void* finished_order(int)) {
-  mainish(new_order, finished_order);
+void run(int portOffset, void* new_order(int, int), void* finished_order(int)) {
+  mainish(portOffset, new_order, finished_order);
 }
 
 void set_lamp(int floor, int button) {

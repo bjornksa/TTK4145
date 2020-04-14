@@ -3,16 +3,21 @@ import threading
 import time
 import subprocess
 import os
+import queue
 
 # Make elev_algo callable from Python
-elevatorlib = ctypes.CDLL(os.path.dirname(__file__) + 'elev_algo/ttk4145demoelevator.so')
+elevatorlib = ctypes.CDLL(os.path.dirname(__file__) + '/elev_algo/ttk4145demoelevator.so')
 
-# Wrappers for c functions in elev_algo
+# Initialize C callback queue
+callbackQueue = queue.Queue(maxsize=0)
+
+# Wrappers for C functions in elev_algo
 def set_lamp(floor, button):
     elevatorlib.set_lamp(floor, button)
 
-def clear_lamp(floor, button):
-    elevatorlib.clear_lamp(floor, button)
+def clear_lamps(floor):
+    for i in range(0,2):
+        elevatorlib.clear_lamp(floor, i)
 
 def get_cost(floor, button):
     return elevatorlib.get_cost(floor, button)
@@ -23,39 +28,29 @@ def add_order(floor, button):
 
 # Functions supposed to be callable from elev_algo
 def new_order(floor, button):
-    # send something to distributor
-    print(f'new order {floor}, {button}')
-    pass
+    callbackQueue.put({'type': 'broadcast_order', 'floor': floor, 'button': button})
 
 def finished_order(floor):
-    # send something to distributor
-    print(f'finished order {floor}')
-    pass
+    callbackQueue.put({'type': 'broadcast_finished_order', 'floor': floor})
 
 # Make the above functions callable from c as callback functions
 c_new_order = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_int)(new_order)
 c_finished_order = ctypes.CFUNCTYPE(None, ctypes.c_int)(finished_order)
 
 # Running the elevator
-def elevator_test():
+def elevator_runner(port_offset, t):
+    c_port_offset = ctypes.c_int(int(port_offset))
+    elevatorlib.run(c_port_offset, c_new_order, c_finished_order)
+
+def elevator_callback_listener(callback, t):
     while True:
-        #print(f'Timer firing')
-        #add_order(1,1)
-        #time.sleep(5)
-        #add_order(3,2)
-        #time.sleep(5)
-        #add_order(2,1)
-        time.sleep(5)
+        callbackElement = callbackQueue.get(True)
+        callback(callbackElement)
 
-def elevator_main():
-    elevatorlib.run(c_new_order, c_finished_order)
+def run(elevator_id, callback):
+    print("Elevator running")
+    elevator_runner_thread = threading.Thread(target=elevator_runner, args=(elevator_id, 1))
+    elevator_callback_listener_thread = threading.Thread(target=elevator_callback_listener, args=(callback, 1))
 
-if __name__ == '__main__':
-    main_thread = threading.Thread(target=elevator_main)
-    test_thread = threading.Thread(target=elevator_test)
-
-    main_thread.start()
-    test_thread.start()
-
-    main_thread.join()
-    test_thread.join()
+    elevator_runner_thread.start()
+    elevator_callback_listener_thread.start()

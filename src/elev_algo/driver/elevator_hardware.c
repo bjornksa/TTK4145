@@ -11,9 +11,12 @@
 static int sockfd;
 static pthread_mutex_t sockmtx;
 
-void elevator_hardware_init() {
+void elevator_hardware_init(int portOffset) {
+    int portInt = 15657 + portOffset;
     char ip[16] = "localhost";
-    char port[8] = "15657";
+    //char port[8] = "15657";
+    char port[8];
+    sprintf(port, "%d", portInt);
     con_load("elevator_hardware.con",
         con_val("com_ip",   ip,   "%s")
         con_val("com_port", port, "%s")
