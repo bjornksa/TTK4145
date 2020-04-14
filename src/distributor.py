@@ -39,12 +39,12 @@ def order_watcher():
                     lowest_cost = 0
                     for costElement in element['costs']:
                         lowest_cost = costElement['cost']
-                        lowest_cost_ip = costElement['sender_ip']
+                        lowest_cost_elevator_id = costElement['sender_id']
                     message = emptyMessage
                     message['type']     = 'order'
                     message['floor']    = element['order']['floor']
                     message['button']   = element['order']['button']
-                    message['order_ip'] = lowest_cost_ip
+                    message['sender_id'] = lowest_cost_elevator_id
                     network.broadcast(message)
                     popList.append(element)
         ordersAndCosts = [element for element in ordersAndCosts if element not in popList]
@@ -59,7 +59,8 @@ while True:
     print(f'Do: {do}')
 
     if 'sender_ip' in do: sender_ip = do['sender_ip']
-    if 'order_ip'  in do: order_ip = do['order_ip']
+    if 'sender_id' in do: sender_id = do['sender_id']
+    if 'order_elevator_id'  in do: order_elevator_id = do['order_elevator_id']
     if 'floor'     in do: floor = do['floor']
     if 'button'    in do: button = do['button']
 
@@ -74,20 +75,19 @@ while True:
         isInList = False
         for element in ordersAndCosts:
             if element['order']['floor'] == floor and element['order']['button'] == button:
-                element['costs'].append({'sender_ip': sender_ip, 'cost': cost})
+                element['costs'].append({'sender_id': sender_id, 'cost': cost})
                 isInList = True
                 break
         if not isInList:
             timestamp = int(time.time())
-            element = {'order': {'floor': floor, 'button': button}, 'timestamp': timestamp, 'costs': [{'sender_ip': sender_ip, 'cost': cost}]}
+            element = {'order': {'floor': floor, 'button': button}, 'timestamp': timestamp, 'costs': [{'sender_id': sender_id, 'cost': cost}]}
             ordersAndCosts.append(element)
 
     elif do['type'] == 'broadcast_finished_order':
-        order_ip = MY_IP
         message = emptyMessage
         message['type']     = 'clear_order'
         message['floor']    = floor
-        message['order_ip'] = order_ip
+        message['order_elevator_id'] = MY_ID
         network.broadcast(message)
 
     elif do['type'] == 'get_cost':
@@ -100,23 +100,23 @@ while True:
         network.send(sender_ip, message)
 
     elif do['type'] == 'clear_order':
-        watchdog.clear_watchdog(order_ip, floor)
+        watchdog.clear_watchdog(order_elevator_id, floor)
         elevator.clear_lamps(floor)
 
     elif do['type'] == 'add_order_or_watchdog':
-        if MY_IP == order_ip:
+        if MY_ID == order_elevator_id:
             elevator.add_order(floor, button)
         else:
-            watchdog.add_watchdog(order_ip, floor, button)
+            watchdog.add_watchdog(order_elevator_id, floor, button)
 
         if MY_IP == sender_ip:
             alreadyInList = False
             for order in ordersNotAcknowledged:
-                if order == {order_ip, floor, button}:
+                if order == {order_elevator_id, floor, button}:
                     alreadyInList = True
                     break
             if not alreadyInList:
-                ordersNotAcknowledged.append({order_ip, floor, button})
+                ordersNotAcknowledged.append({order_elevator_id, floor, button})
         else:
             message = emptyMessage
             message['type']   = 'acknowledge_order'
@@ -129,7 +129,7 @@ while True:
             isInList = False
             i = 0
             for order in ordersNotAcknowledged:
-                if order == {order_ip, floor, button}:
+                if order == {order_elevator_id, floor, button}:
                     isInList = True
                     break
                 i = i + 1
