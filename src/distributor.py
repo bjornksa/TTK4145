@@ -9,7 +9,7 @@ import socket
 import sys
 
 # Set elevator id by running the the script with id as the first and only argument. Default id is 1.
-MY_ID = 1
+MY_ID = 0
 if len(sys.argv) - 1 > 0:
     MY_ID = sys.argv[1]
 print(f'Elevator running with id {MY_ID}.')
