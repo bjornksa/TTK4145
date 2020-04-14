@@ -115,7 +115,8 @@ while True:
         message['floor']  = floor
         message['button'] = button
         message['cost']   = cost
-        network.send(sender_ip, message)
+        #network.send(sender_ip, message)
+        network.broadcast(message)
 
     elif do['type'] == 'clear_order':
         watchdog.clear_watchdog(order_elevator_id, floor)
@@ -131,7 +132,8 @@ while True:
             message['order_elevator_id'] = order_elevator_id
             message['floor']             = floor
             message['button']            = button
-            network.send(sender_ip, message)
+            #network.send(sender_ip, message)
+            network.broadcast(message)
             if button != 2:
                 elevator.set_lamp(floor, button)
 
