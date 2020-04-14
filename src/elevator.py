@@ -16,7 +16,7 @@ def set_lamp(floor, button):
     elevatorlib.set_lamp(floor, button)
 
 def clear_lamps(floor):
-    for i in range(0,2):
+    for i in range(0,3):
         elevatorlib.clear_lamp(floor, i)
 
 def get_cost(floor, button):
@@ -28,7 +28,10 @@ def add_order(floor, button):
 
 # Functions supposed to be callable from elev_algo
 def new_order(floor, button):
-    callbackQueue.put({'type': 'broadcast_order', 'floor': floor, 'button': button})
+    if button == 2: # Cab order
+        callbackQueue.put({'type': 'broadcast_order', 'floor': floor, 'button': button, 'order_elevator_id': 'MY_ID'})
+    else:
+        callbackQueue.put({'type': 'broadcast_cost_request', 'floor': floor, 'button': button})
 
 def finished_order(floor):
     callbackQueue.put({'type': 'broadcast_finished_order', 'floor': floor})

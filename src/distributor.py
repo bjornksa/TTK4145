@@ -9,7 +9,7 @@ import socket
 import sys
 
 # Set elevator id by running the the script with id as the first and only argument. Default id is 1.
-MY_ID = 1
+MY_ID = 0
 if len(sys.argv) - 1 > 0:
     MY_ID = sys.argv[1]
 print(f'Elevator running with id {MY_ID}.')
@@ -36,22 +36,20 @@ def order_watcher():
         for element in ordersAndCosts:
             if element['timestamp'] + ORDER_WATCHER_LIMIT < current_time:
                 print()
-                print("TIDA ER UTE")
-                print(element)
+                print("SAMMENLIGNER KOST OG BROADCASTER ORDREN")
+                print(f'Costs: {element}')
+                print()
                 if len(element['costs']) > 0:
                     lowest_cost = 1000
                     for costElement in element['costs']:
                         if costElement['cost'] < lowest_cost:
                             lowest_cost = costElement['cost']
                             lowest_cost_elevator_id = costElement['sender_id']
-                    print(f'lowest cost: {lowest_cost}, id: {lowest_cost_elevator_id}')
-                    print()
-                    message = emptyMessage
-                    message['type']              = 'order'
-                    message['floor']             = element['order']['floor']
-                    message['button']            = element['order']['button']
-                    message['order_elevator_id'] = lowest_cost_elevator_id
-                    network.broadcast(message)
+                    add_to_distributor({'type': 'broadcast_order',
+                                        'floor': element['order']['floor'],
+                                        'button': element['order']['button'],
+                                        'order_elevator_id': lowest_cost_elevator_id
+                                        })
                     popList.append(element)
         ordersAndCosts = [element for element in ordersAndCosts if element not in popList]
         time.sleep(0.1)
@@ -70,11 +68,20 @@ while True:
     if 'floor'              in do: floor = do['floor']
     if 'button'             in do: button = do['button']
 
-    if do['type'] == 'broadcast_order':
-        message = emptyMessage
+    if do['type'] == 'broadcast_cost_request':
+        message = emptyMessage.copy()
         message['type']   = 'cost_request'
         message['floor']  = floor
         message['button'] = button
+        network.broadcast(message)
+
+    elif do['type'] == 'broadcast_order':
+        if order_elevator_id == 'MY_ID': order_elevator_id = MY_ID
+        message = emptyMessage.copy()
+        message['type']              = 'order'
+        message['floor']             = floor
+        message['button']            = button
+        message['order_elevator_id'] = order_elevator_id
         network.broadcast(message)
 
     elif do['type'] == 'receive_cost':
@@ -91,7 +98,7 @@ while True:
             ordersAndCosts.append(element)
 
     elif do['type'] == 'broadcast_finished_order':
-        message = emptyMessage
+        message = emptyMessage.copy()
         message['type']              = 'clear_order'
         message['floor']             = floor
         message['order_elevator_id'] = MY_ID
@@ -99,7 +106,7 @@ while True:
 
     elif do['type'] == 'get_cost':
         cost = elevator.get_cost(floor, button)
-        message = emptyMessage
+        message = emptyMessage.copy()
         message['type']   = 'cost'
         message['floor']  = floor
         message['button'] = button
@@ -111,35 +118,45 @@ while True:
         elevator.clear_lamps(floor)
 
     elif do['type'] == 'add_order_or_watchdog':
-        if MY_ID == order_elevator_id:
+        if MY_ID == order_elevator_id and button == 2:
             elevator.add_order(floor, button)
-        else:
+
+        if sender_id != MY_ID:
+            message = emptyMessage.copy()
+            message['type']              = 'acknowledge_order'
+            message['order_elevator_id'] = order_elevator_id
+            message['floor']             = floor
+            message['button']            = button
+            network.send(sender_ip, message)
+            if button != 2:
+                elevator.set_lamp(floor, button)
+
+        if order_elevator_id == MY_ID and sender_id != MY_ID:
+            elevator.add_order(floor, button)
+
+        if order_elevator_id != MY_ID:
             watchdog.add_watchdog(order_elevator_id, floor, button)
 
-        if MY_IP == sender_ip:
-            alreadyInList = False
-            for order in ordersNotAcknowledged:
-                if order == {order_elevator_id, floor, button}:
-                    alreadyInList = True
-                    break
-            if not alreadyInList:
-                ordersNotAcknowledged.append({order_elevator_id, floor, button})
-        else:
-            message = emptyMessage
-            message['type']   = 'acknowledge_order'
-            message['floor']  = floor
-            message['button'] = button
-            network.send(sender_ip, message)
-            elevator.set_lamp(floor, button)
-
-    elif do['type'] == 'acknowledge_order':
+        if sender_id == MY_ID:
             isInList = False
-            i = 0
             for order in ordersNotAcknowledged:
-                if order == {order_elevator_id, floor, button}:
+                if order == {'order_elevator_id': order_elevator_id, 'floor': floor, 'button': button}:
                     isInList = True
                     break
-                i = i + 1
-            if isInList:
-                elevator.set_lamp(floor, button)
-                ordersNotAcknowledged.pop(i)
+            if not isInList:
+                ordersNotAcknowledged.append({'order_elevator_id': order_elevator_id, 'floor': floor, 'button': button})
+
+    elif do['type'] == 'acknowledge_order':
+        isInList = False
+        i = 0
+        for order in ordersNotAcknowledged:
+            if order == {'order_elevator_id': order_elevator_id, 'floor': floor, 'button': button}:
+                if order_elevator_id == MY_ID:
+                    elevator.add_order(floor, button)
+                else:
+                    elevator.set_lamp(floor, button)
+                isInList = True
+                break
+            i = i + 1
+        if isInList:
+            ordersNotAcknowledged.pop(i)

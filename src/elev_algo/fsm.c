@@ -12,6 +12,16 @@
 static Elevator             elevator;
 static ElevOutputDevice     outputDevice;
 
+int finished_order_at_idle = 0;
+void fsm_set_finished_order_at_idle_flag() {
+  finished_order_at_idle = 1;
+}
+void fsm_clear_finished_order_at_idle_flag() {
+  finished_order_at_idle = 0;
+}
+int fsm_check_finished_order_at_idle_flag() {
+  return finished_order_at_idle;
+}
 
 static void __attribute__((constructor)) fsm_init(){
     elevator = elevator_uninitialized();
@@ -49,6 +59,7 @@ void fsm_onRequestButtonPress(int btn_floor, Button btn_type){
 
     case EB_DoorOpen:
         if(elevator.floor == btn_floor){
+            fsm_set_finished_order_at_idle_flag();
             timer_start(elevator.config.doorOpenDuration_s);
         } else {
             elevator.requests[btn_floor][btn_type] = 1;
@@ -61,6 +72,7 @@ void fsm_onRequestButtonPress(int btn_floor, Button btn_type){
 
     case EB_Idle:
         if(elevator.floor == btn_floor){
+            fsm_set_finished_order_at_idle_flag();
             outputDevice.doorLight(1);
             timer_start(elevator.config.doorOpenDuration_s);
             elevator.behaviour = EB_DoorOpen;
