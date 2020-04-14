@@ -57,7 +57,7 @@ def listener_private(callback, t):
 
     while True:
         data = receive(receive_private_socket)
-        print("received private: ", data)
+        #print("received private: ", data)
         callback_wrapper(data, callback)
         sleep(0.5)
 
@@ -68,7 +68,7 @@ def listener_broadcast(callback, t):
 
     while True:
         data = receive(receive_broadcast_socket)
-        print("received broadcast: ", data)
+        #print("received broadcast: ", data)
         callback_wrapper(data, callback)
         sleep(0.5)
 

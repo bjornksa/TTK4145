@@ -41,7 +41,7 @@ def order_watcher():
         popList = []
         for element in ordersAndCosts:
             if element['timestamp'] + ORDER_WATCHER_LIMIT < current_time:
-                print(f'Costs: {element}')
+                #print(f'Costs: {element}')
                 if len(element['costs']) > 0:
                     lowest_cost = 1000
                     for costElement in element['costs']:
@@ -63,7 +63,7 @@ order_watcher_thread.start()
 
 while True:
     do = todo.get(True)
-    print(f'Do: {do}')
+    #print(f'Do: {do}')
 
     if 'sender_ip'          in do: sender_ip = do['sender_ip']
     if 'sender_id'          in do: sender_id = do['sender_id']
