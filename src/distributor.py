@@ -116,7 +116,7 @@ while True:
         else:
             watchdog.add_watchdog(order_elevator_id, floor, button)
 
-        if MY_IP == sender_ip:
+        if MY_ID == sender_id:
             alreadyInList = False
             for order in ordersNotAcknowledged:
                 if order == {order_elevator_id, floor, button}:
