@@ -19,7 +19,9 @@ s.connect(("8.8.8.8", 80))
 MY_IP = s.getsockname()[0]
 s.close()
 
+# Time to wait for cost from other elevators. In seconds.
 ORDER_WATCHER_LIMIT = 1
+
 todo = queue.Queue(maxsize=0)
 ordersNotAcknowledged = []
 ordersAndCosts = []
