@@ -28,7 +28,8 @@ ordersAndCosts = []
 emptyMessage = {'sender_ip': MY_IP, 'sender_id': MY_ID}
 
 def add_to_distributor(task):
-    todo.put(task)
+    if task not in todo.queue:
+        todo.put(task)
 
 elevator.run(MY_ID, add_to_distributor)
 watchdog.run(add_to_distributor)
