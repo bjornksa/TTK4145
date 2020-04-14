@@ -15,7 +15,7 @@ def send(ip, data):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     data_string = json.dumps(data)
     number_of_sends = NUMBER_OF_SENDS_MIN
-    if data['type'] == 'acknowledge_order' or data['type'] == 'broadcast_finished_order':
+    if data['type'] == 'acknowledge_order' or data['type'] == 'clear_order':
         number_of_sends = NUMBER_OF_SENDS_MAX
     for i in range(0, number_of_sends):
         s.sendto(data_string.encode(), (ip, PRIVATE_PORT))
@@ -64,7 +64,7 @@ def listener_private(callback, t):
 
     while True:
         data = receive(receive_private_socket)
-        #print("received private: ", data)
+        print("received private: ", data)
         callback_wrapper(data, callback)
         sleep(0.01)
 
@@ -75,7 +75,7 @@ def listener_broadcast(callback, t):
 
     while True:
         data = receive(receive_broadcast_socket)
-        #print("received broadcast: ", data)
+        print("received broadcast: ", data)
         callback_wrapper(data, callback)
         sleep(0.01)
 
