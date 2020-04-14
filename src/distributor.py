@@ -126,36 +126,45 @@ while True:
         elevator.clear_lamps(floor)
 
     elif do['type'] == 'add_order_or_watchdog':
-        if MY_ID == order_elevator_id:
+        if MY_ID == order_elevator_id and button == 2:
             elevator.add_order(floor, button)
-        else:
-            watchdog.add_watchdog(order_elevator_id, floor, button)
 
-        if MY_ID == sender_id:
-            alreadyInList = False
-            for order in ordersNotAcknowledged:
-                if order == {order_elevator_id, floor, button}:
-                    alreadyInList = True
-                    break
-            if not alreadyInList:
-                ordersNotAcknowledged.append({order_elevator_id, floor, button})
-        else:
+        if sender_id != MY_ID:
             message = emptyMessage.copy()
-            message['type']   = 'acknowledge_order'
-            message['floor']  = floor
-            message['button'] = button
+            message['type']              = 'acknowledge_order'
+            message['order_elevator_id'] = order_elevator_id
+            message['floor']             = floor
+            message['button']            = button
             network.send(sender_ip, message)
             if button != 2:
                 elevator.set_lamp(floor, button)
 
-    elif do['type'] == 'acknowledge_order':
+        if order_elevator_id == MY_ID and sender_id != MY_ID:
+            elevator.add_order(floor, button)
+
+        if order_elevator_id != MY_ID:
+            watchdog.add_watchdog(order_elevator_id, floor, button)
+
+        if sender_id == MY_ID:
             isInList = False
-            i = 0
             for order in ordersNotAcknowledged:
-                if order == {order_elevator_id, floor, button}:
+                if order == {'order_elevator_id': order_elevator_id, 'floor': floor, 'button': button}:
                     isInList = True
                     break
-                i = i + 1
-            if isInList:
-                elevator.set_lamp(floor, button)
-                ordersNotAcknowledged.pop(i)
+            if not isInList:
+                ordersNotAcknowledged.append({'order_elevator_id': order_elevator_id, 'floor': floor, 'button': button})
+
+    elif do['type'] == 'acknowledge_order':
+        isInList = False
+        i = 0
+        for order in ordersNotAcknowledged:
+            if order == {'order_elevator_id': order_elevator_id, 'floor': floor, 'button': button}:
+                if order_elevator_id == MY_ID:
+                    elevator.add_order(floor, button)
+                else:
+                    elevator.set_lamp(floor, button)
+                isInList = True
+                break
+            i = i + 1
+        if isInList:
+            ordersNotAcknowledged.pop(i)
