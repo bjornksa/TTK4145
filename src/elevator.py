@@ -31,7 +31,7 @@ def new_order(floor, button):
     if button == 2: # Cab order
         add_order(floor, button)
     else:
-        callbackQueue.put({'type': 'broadcast_order', 'floor': floor, 'button': button})
+        callbackQueue.put({'type': 'broadcast_cost_request', 'floor': floor, 'button': button})
 
 def finished_order(floor):
     callbackQueue.put({'type': 'broadcast_finished_order', 'floor': floor})

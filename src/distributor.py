@@ -37,15 +37,14 @@ def order_watcher():
             if element['timestamp'] + ORDER_WATCHER_LIMIT < current_time:
                 print()
                 print("TIDA ER UTE")
-                print(element)
+                print(f'Costs: {element}')
+                print()
                 if len(element['costs']) > 0:
                     lowest_cost = 1000
                     for costElement in element['costs']:
                         if costElement['cost'] < lowest_cost:
                             lowest_cost = costElement['cost']
                             lowest_cost_elevator_id = costElement['sender_id']
-                    print(f'Costs: {element}')
-                    print()
                     message = emptyMessage.copy()
                     message['type']              = 'order'
                     message['floor']             = element['order']['floor']
@@ -70,7 +69,7 @@ while True:
     if 'floor'              in do: floor = do['floor']
     if 'button'             in do: button = do['button']
 
-    if do['type'] == 'broadcast_order':
+    if do['type'] == 'broadcast_cost_request':
         message = emptyMessage.copy()
         message['type']   = 'cost_request'
         message['floor']  = floor
