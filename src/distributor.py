@@ -44,9 +44,9 @@ def order_watcher():
                         if costElement['cost'] < lowest_cost:
                             lowest_cost = costElement['cost']
                             lowest_cost_elevator_id = costElement['sender_id']
-                    print(f'lowest cost: {lowest_cost}, id: {lowest_cost_elevator_id}')
+                    print(f'Costs: {element}')
                     print()
-                    message = emptyMessage
+                    message = emptyMessage.copy()
                     message['type']              = 'order'
                     message['floor']             = element['order']['floor']
                     message['button']            = element['order']['button']
@@ -71,7 +71,7 @@ while True:
     if 'button'             in do: button = do['button']
 
     if do['type'] == 'broadcast_order':
-        message = emptyMessage
+        message = emptyMessage.copy()
         message['type']   = 'cost_request'
         message['floor']  = floor
         message['button'] = button
@@ -91,7 +91,7 @@ while True:
             ordersAndCosts.append(element)
 
     elif do['type'] == 'broadcast_finished_order':
-        message = emptyMessage
+        message = emptyMessage.copy()
         message['type']              = 'clear_order'
         message['floor']             = floor
         message['order_elevator_id'] = MY_ID
@@ -99,7 +99,7 @@ while True:
 
     elif do['type'] == 'get_cost':
         cost = elevator.get_cost(floor, button)
-        message = emptyMessage
+        message = emptyMessage.copy()
         message['type']   = 'cost'
         message['floor']  = floor
         message['button'] = button
@@ -125,7 +125,7 @@ while True:
             if not alreadyInList:
                 ordersNotAcknowledged.append({order_elevator_id, floor, button})
         else:
-            message = emptyMessage
+            message = emptyMessage.copy()
             message['type']   = 'acknowledge_order'
             message['floor']  = floor
             message['button'] = button
