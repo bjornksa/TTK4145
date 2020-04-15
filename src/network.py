@@ -8,18 +8,22 @@ BROADCAST_IP = "255.255.255.255"
 BROADCAST_PORT = 1440
 PRIVATE_PORT = 1560
 
-def send(ip, data):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    data_string = json.dumps(data)
-    s.sendto(data_string.encode(), (ip, PRIVATE_PORT))
-    s.close()
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+MY_IP = s.getsockname()[0]
+s.close()
 
-def broadcast(data):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    data_string = json.dumps(data)
-    s.sendto(data_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
+elevators = [] # {elevator_id, ip, socket}
+
+def send(elevator_id, data):
+    '''
+    elevator = next((elev for elev in elevators if elev['elevator_id' == elevator_id), None)
+    s = elevator['socket']
+    s.sendall(data)
     s.close()
+    print('Received', repr(data))
+    '''
+    pass
 
 # Den her gjør om data fra melding til task og så kjører den callback()-funksjonen fra distributor
 def callback_wrapper(data, callback):
@@ -58,21 +62,35 @@ def listener_private(callback, t):
         callback_wrapper(data, callback)
         sleep(0.01)
 
-def listener_broadcast(callback, t):
+def listen_for_alive_signal():
     receive_broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     receive_broadcast_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     receive_broadcast_socket.bind(("", BROADCAST_PORT))
 
     while True:
         data = receive(receive_broadcast_socket)
-        #print("received broadcast: ", data)
-        callback_wrapper(data, callback)
+        print("received broadcast: ", data)
+        elevator_is_in_list = next((elev for elev in elevators if elev['elevator_id'] == data['elevator_id']), False)
+        if not elevator_is_in_list:
+            elevators.append({'elevator_id': data['elevator_id'], 'ip': data['ip'], 'socket': 'hei'})
+            print(elevators)
         sleep(0.01)
 
-# Denne kalles opp fra distributor for å dra igang nettverkslytting.
-# callback() er en funksjon i distributor som skal kalles opp når vi har mottatt en melding
-def run(callback):
-    listener_private_thread = threading.Thread(target=listener_private, args=(callback, 1))
-    listener_broadcast_thread = threading.Thread(target=listener_broadcast, args=(callback, 1))
-    listener_private_thread.start()
-    listener_broadcast_thread.start()
+def broadcast_alive_signal(elevator_id, t):
+    while True:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        data = {'elevator_id': elevator_id, 'ip': MY_IP}
+        data_string = json.dumps(data)
+        s.sendto(data_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
+        s.close()
+        sleep(5)
+
+def run(elevator_id, callback):
+    broadcast_alive_signal_thread = threading.Thread(target=broadcast_alive_signal, args=(elevator_id, 1))
+    broadcast_alive_signal_thread.start()
+
+    listen_for_alive_signal_thread = threading.Thread(target=listen_for_alive_signal)
+    listen_for_alive_signal_thread.start()
+
+run(1, False)

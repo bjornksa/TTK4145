@@ -33,7 +33,7 @@ def add_to_distributor(task):
 
 elevator.run(MY_ID, add_to_distributor)
 watchdog.run(add_to_distributor)
-network.run(add_to_distributor)
+network.run(MY_ID, add_to_distributor)
 
 def order_watcher():
     global ordersAndCosts
