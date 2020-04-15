@@ -52,8 +52,8 @@ void fsm_onInitBetweenFloors(void){
 }
 
 void fsm_onRequestButtonPress(int btn_floor, Button btn_type){
-    printf("\n\n%s(%d, %s)\n", __FUNCTION__, btn_floor, elevio_button_toString(btn_type));
-    elevator_print(elevator);
+    //printf("\n\n%s(%d, %s)\n", __FUNCTION__, btn_floor, elevio_button_toString(btn_type));
+    //elevator_print(elevator);
 
     switch(elevator.behaviour){
 
@@ -88,16 +88,16 @@ void fsm_onRequestButtonPress(int btn_floor, Button btn_type){
 
     setAllLights(elevator);
 
-    printf("\nNew state:\n");
-    elevator_print(elevator);
+    //printf("\nNew state:\n");
+    //elevator_print(elevator);
 }
 
 
 
 
 void fsm_onFloorArrival(int newFloor, void* finished_order(int)){
-    printf("\n\n%s(%d)\n", __FUNCTION__, newFloor);
-    elevator_print(elevator);
+    //printf("\n\n%s(%d)\n", __FUNCTION__, newFloor);
+    //elevator_print(elevator);
 
     elevator.floor = newFloor;
 
@@ -119,16 +119,16 @@ void fsm_onFloorArrival(int newFloor, void* finished_order(int)){
         break;
     }
 
-    printf("\nNew state:\n");
-    elevator_print(elevator);
+    //printf("\nNew state:\n");
+    //elevator_print(elevator);
 }
 
 
 
 
 void fsm_onDoorTimeout(void){
-    printf("\n\n%s()\n", __FUNCTION__);
-    elevator_print(elevator);
+    //printf("\n\n%s()\n", __FUNCTION__);
+    //elevator_print(elevator);
 
     switch(elevator.behaviour){
     case EB_DoorOpen:
@@ -148,8 +148,8 @@ void fsm_onDoorTimeout(void){
         break;
     }
 
-    printf("\nNew state:\n");
-    elevator_print(elevator);
+    //printf("\nNew state:\n");
+    //elevator_print(elevator);
 }
 
 Elevator fsm_getElevator() {

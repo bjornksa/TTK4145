@@ -21,6 +21,7 @@ def broadcast(data):
     s.sendto(data_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
     s.close()
 
+# Den her gjør om data fra melding til task og så kjører den callback()-funksjonen fra distributor
 def callback_wrapper(data, callback):
     data = ast.literal_eval(data.decode('utf-8'))
     callback_data = data
@@ -53,9 +54,9 @@ def listener_private(callback, t):
 
     while True:
         data = receive(receive_private_socket)
-        print("received private: ", data)
+        #print("received private: ", data)
         callback_wrapper(data, callback)
-        sleep(0.5)
+        sleep(0.01)
 
 def listener_broadcast(callback, t):
     receive_broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -64,12 +65,13 @@ def listener_broadcast(callback, t):
 
     while True:
         data = receive(receive_broadcast_socket)
-        print("received broadcast: ", data)
+        #print("received broadcast: ", data)
         callback_wrapper(data, callback)
-        sleep(0.5)
+        sleep(0.01)
 
+# Denne kalles opp fra distributor for å dra igang nettverkslytting.
+# callback() er en funksjon i distributor som skal kalles opp når vi har mottatt en melding
 def run(callback):
-    print("Network running")
     listener_private_thread = threading.Thread(target=listener_private, args=(callback, 1))
     listener_broadcast_thread = threading.Thread(target=listener_broadcast, args=(callback, 1))
     listener_private_thread.start()
