@@ -20,7 +20,7 @@ MY_IP = s.getsockname()[0]
 s.close()
 
 # Time to wait for cost from other elevators. In seconds.
-ORDER_WATCHER_LIMIT = 1
+ORDER_WATCHER_LIMIT = 0.2
 
 todo = queue.Queue(maxsize=0)
 ordersNotAcknowledged = []
@@ -28,7 +28,8 @@ ordersAndCosts = []
 emptyMessage = {'sender_ip': MY_IP, 'sender_id': MY_ID}
 
 def add_to_distributor(task):
-    todo.put(task)
+    if task not in todo.queue:
+        todo.put(task)
 
 elevator.run(MY_ID, add_to_distributor)
 watchdog.run(add_to_distributor)
@@ -41,7 +42,7 @@ def order_watcher():
         popList = []
         for element in ordersAndCosts:
             if element['timestamp'] + ORDER_WATCHER_LIMIT < current_time:
-                print(f'Costs: {element}')
+                #print(f'Costs: {element}')
                 if len(element['costs']) > 0:
                     lowest_cost = 1000
                     for costElement in element['costs']:
@@ -55,7 +56,7 @@ def order_watcher():
                                         })
                     popList.append(element)
         ordersAndCosts = [element for element in ordersAndCosts if element not in popList]
-        time.sleep(0.1)
+        time.sleep(ORDER_WATCHER_LIMIT/2)
 
 
 order_watcher_thread = threading.Thread(target=order_watcher)
@@ -63,7 +64,7 @@ order_watcher_thread.start()
 
 while True:
     do = todo.get(True)
-    print(f'Do: {do}')
+    #print(f'Do: {do}')
 
     if 'sender_ip'          in do: sender_ip = do['sender_ip']
     if 'sender_id'          in do: sender_id = do['sender_id']
@@ -72,6 +73,12 @@ while True:
     if 'button'             in do: button = do['button']
 
     if do['type'] == 'broadcast_cost_request':
+        # Insert new element into cost list
+        ordersAndCosts[:] = [element for element in ordersAndCosts if not (element['order']['floor'] == floor and element['order']['button'] == button)]
+        timestamp = int(time.time())
+        element = {'order': {'floor': floor, 'button': button}, 'timestamp': timestamp, 'costs': []}
+        ordersAndCosts.append(element)
+
         message = emptyMessage.copy()
         message['type']   = 'cost_request'
         message['floor']  = floor
@@ -89,16 +96,10 @@ while True:
 
     elif do['type'] == 'receive_cost':
         cost = do['cost']
-        isInList = False
         for element in ordersAndCosts:
             if element['order']['floor'] == floor and element['order']['button'] == button:
                 element['costs'].append({'sender_id': sender_id, 'cost': cost})
-                isInList = True
                 break
-        if not isInList:
-            timestamp = int(time.time())
-            element = {'order': {'floor': floor, 'button': button}, 'timestamp': timestamp, 'costs': [{'sender_id': sender_id, 'cost': cost}]}
-            ordersAndCosts.append(element)
 
     elif do['type'] == 'broadcast_finished_order':
         message = emptyMessage.copy()
@@ -114,7 +115,8 @@ while True:
         message['floor']  = floor
         message['button'] = button
         message['cost']   = cost
-        network.send(sender_ip, message)
+        #network.send(sender_ip, message)
+        network.broadcast(message)
 
     elif do['type'] == 'clear_order':
         watchdog.clear_watchdog(order_elevator_id, floor)
@@ -130,7 +132,8 @@ while True:
             message['order_elevator_id'] = order_elevator_id
             message['floor']             = floor
             message['button']            = button
-            network.send(sender_ip, message)
+            #network.send(sender_ip, message)
+            network.broadcast(message)
             if button != 2:
                 elevator.set_lamp(floor, button)
 
