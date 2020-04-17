@@ -1,0 +1,10 @@
+RESOURCE = (get->put->RESOURCE).
+
+A = (printer.get->scanner.get->copy ->printer.put->scanner.put->A).
+
+B = (scanner.get->printer.get->copy ->scanner.put->printer.put->B).
+
+||SYS = (a:A||b:B
+||{a,b}::printer:RESOURCE
+ ||{a,b}::scanner:RESOURCE
+ ).

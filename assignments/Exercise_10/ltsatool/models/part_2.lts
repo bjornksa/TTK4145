@@ -1,0 +1,5 @@
+LIGHT    = (turn_on->green -> turn_off -> LIGHT | turn_on->green -> turn_off -> LIVELOCK_LIGHT_1),
+LIVELOCK_LIGHT_1 = (turn_on-> red -> turn_off -> LIVELOCK_LIGHT_2),
+LIVELOCK_LIGHT_2 = (turn_on-> yellow -> turn_off -> LIVELOCK_LIGHT_1).
+
+progress P = {yellow, red}
