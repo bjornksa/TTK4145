@@ -27,13 +27,13 @@ ordersNotAcknowledged = []
 ordersAndCosts = []
 emptyMessage = {'sender_ip': MY_IP, 'sender_id': MY_ID}
 
-def add_to_distributor(task):
+def add_task(task):
     if task not in todo.queue:
         todo.put(task)
 
-elevator.run(MY_ID, add_to_distributor)
-watchdog.run(add_to_distributor)
-network.run(add_to_distributor)
+elevator.run(MY_ID, add_task)
+watchdog.run(add_task)
+network.run(add_task)
 
 def order_watcher():
     global ordersAndCosts
@@ -49,7 +49,7 @@ def order_watcher():
                         if costElement['cost'] < lowest_cost:
                             lowest_cost = costElement['cost']
                             lowest_cost_elevator_id = costElement['sender_id']
-                    add_to_distributor({'type': 'broadcast_order',
+                    add_task({'type': 'broadcast_order',
                                         'floor': element['order']['floor'],
                                         'button': element['order']['button'],
                                         'order_elevator_id': lowest_cost_elevator_id
