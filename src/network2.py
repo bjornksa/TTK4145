@@ -53,7 +53,7 @@ class Network_manager():
         self.connections_lock.acquire()
         remote_ID = data['elev_id']
         try:
-            if not remote_ID in self.connections and not remote_ID == self.id: # Only active connections shall be in the dictionary
+            if not remote_ID in self.connections and not remote_ID > self.id: # Only active connections shall be in the dictionary
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect((addres[0], data['tcp_port']))
                 id_dict = {'elev_id': self.id}
