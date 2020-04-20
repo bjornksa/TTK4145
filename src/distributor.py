@@ -1,4 +1,4 @@
-import elevator
+from elevator import Elevator
 import network
 from watchdog import Watchdog
 
@@ -45,7 +45,10 @@ def add_task_from_message(data):
         task['type'] = 'acknowledge_order'
     add_task(task)
 
-elevator.run(MY_ID, add_task)
+
+#elevator.run(MY_ID, add_task)
+elevator = Elevator(MY_ID, add_task)
+elevator.run()
 #watchdog.run(add_task)
 watchdog = Watchdog(add_task)
 watchdog.run()
