@@ -1,6 +1,6 @@
 import elevator
 import network
-import watchdog
+from watchdog import Watchdog
 
 import threading
 import queue
@@ -46,7 +46,9 @@ def add_task_from_message(data):
     add_task(task)
 
 elevator.run(MY_ID, add_task)
-watchdog.run(add_task)
+#watchdog.run(add_task)
+watchdog = Watchdog(add_task)
+watchdog.run()
 network.run(add_task_from_message)
 
 def order_watcher():
