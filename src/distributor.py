@@ -1,6 +1,6 @@
-import elevator
+from elevator import Elevator
 import network
-import watchdog
+from watchdog import Watchdog
 
 import threading
 import queue
@@ -27,13 +27,32 @@ ordersNotAcknowledged = []
 ordersAndCosts = []
 emptyMessage = {'sender_ip': MY_IP, 'sender_id': MY_ID}
 
-def add_to_distributor(task):
+def add_task(task):
     if task not in todo.queue:
         todo.put(task)
 
-elevator.run(MY_ID, add_to_distributor)
-watchdog.run(add_to_distributor)
-network.run(add_to_distributor)
+def add_task_from_message(data):
+    task = data
+    if data['type'] == 'cost_request':
+        task['type'] = 'get_cost'
+    elif data['type'] == 'order':
+        task['type'] = 'add_order_or_watchdog'
+    elif data['type'] == 'clear_order':
+        task['type'] = 'clear_order'
+    elif data['type'] == 'cost':
+        task['type'] = 'receive_cost'
+    elif data['type'] == 'acknowledge_order':
+        task['type'] = 'acknowledge_order'
+    add_task(task)
+
+
+#elevator.run(MY_ID, add_task)
+elevator = Elevator(MY_ID, add_task)
+elevator.run()
+#watchdog.run(add_task)
+watchdog = Watchdog(add_task)
+watchdog.run()
+network.run(add_task_from_message)
 
 def order_watcher():
     global ordersAndCosts
@@ -49,7 +68,7 @@ def order_watcher():
                         if costElement['cost'] < lowest_cost:
                             lowest_cost = costElement['cost']
                             lowest_cost_elevator_id = costElement['sender_id']
-                    add_to_distributor({'type': 'broadcast_order',
+                    add_task({'type': 'broadcast_order',
                                         'floor': element['order']['floor'],
                                         'button': element['order']['button'],
                                         'order_elevator_id': lowest_cost_elevator_id
@@ -63,16 +82,16 @@ order_watcher_thread = threading.Thread(target=order_watcher)
 order_watcher_thread.start()
 
 while True:
-    do = todo.get(True)
-    #print(f'Do: {do}')
+    task = todo.get(True)
+    #print(f'Task: {task}')
 
-    if 'sender_ip'          in do: sender_ip = do['sender_ip']
-    if 'sender_id'          in do: sender_id = do['sender_id']
-    if 'order_elevator_id'  in do: order_elevator_id = do['order_elevator_id']
-    if 'floor'              in do: floor = do['floor']
-    if 'button'             in do: button = do['button']
+    if 'sender_ip'          in task: sender_ip = task['sender_ip']
+    if 'sender_id'          in task: sender_id = task['sender_id']
+    if 'order_elevator_id'  in task: order_elevator_id = task['order_elevator_id']
+    if 'floor'              in task: floor = task['floor']
+    if 'button'             in task: button = task['button']
 
-    if do['type'] == 'broadcast_cost_request':
+    if task['type'] == 'broadcast_cost_request':
         # Insert new element into cost list
         ordersAndCosts[:] = [element for element in ordersAndCosts if not (element['order']['floor'] == floor and element['order']['button'] == button)]
         timestamp = int(time.time())
@@ -85,7 +104,7 @@ while True:
         message['button'] = button
         network.broadcast(message)
 
-    elif do['type'] == 'broadcast_order':
+    elif task['type'] == 'broadcast_order':
         if order_elevator_id == 'MY_ID': order_elevator_id = MY_ID
         message = emptyMessage.copy()
         message['type']              = 'order'
@@ -94,21 +113,21 @@ while True:
         message['order_elevator_id'] = order_elevator_id
         network.broadcast(message)
 
-    elif do['type'] == 'receive_cost':
-        cost = do['cost']
+    elif task['type'] == 'receive_cost':
+        cost = task['cost']
         for element in ordersAndCosts:
             if element['order']['floor'] == floor and element['order']['button'] == button:
                 element['costs'].append({'sender_id': sender_id, 'cost': cost})
                 break
 
-    elif do['type'] == 'broadcast_finished_order':
+    elif task['type'] == 'broadcast_finished_order':
         message = emptyMessage.copy()
         message['type']              = 'clear_order'
         message['floor']             = floor
         message['order_elevator_id'] = MY_ID
         network.broadcast(message)
 
-    elif do['type'] == 'get_cost':
+    elif task['type'] == 'get_cost':
         cost = elevator.get_cost(floor, button)
         message = emptyMessage.copy()
         message['type']   = 'cost'
@@ -118,11 +137,11 @@ while True:
         #network.send(sender_ip, message)
         network.broadcast(message)
 
-    elif do['type'] == 'clear_order':
+    elif task['type'] == 'clear_order':
         watchdog.clear_watchdog(order_elevator_id, floor)
         elevator.clear_lamps(floor)
 
-    elif do['type'] == 'add_order_or_watchdog':
+    elif task['type'] == 'add_order_or_watchdog':
         if MY_ID == order_elevator_id and button == 2:
             elevator.add_order(floor, button)
 
@@ -154,7 +173,7 @@ while True:
             if not isInList:
                 ordersNotAcknowledged.append({'order_elevator_id': order_elevator_id, 'floor': floor, 'button': button})
 
-    elif do['type'] == 'acknowledge_order': # receive ack
+    elif task['type'] == 'acknowledge_order': # receive ack
         isInList = False
         i = 0
         for order in ordersNotAcknowledged:

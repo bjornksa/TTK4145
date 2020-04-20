@@ -21,29 +21,9 @@ def broadcast(data):
     s.sendto(data_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
     s.close()
 
-# Den her gjør om data fra melding til task og så kjører den callback()-funksjonen fra distributor
-def callback_wrapper(data, callback):
-    data = ast.literal_eval(data.decode('utf-8'))
-    callback_data = data
-    if data['type'] == 'cost_request':
-        callback_data['type'] = 'get_cost'
-
-    elif data['type'] == 'order':
-        callback_data['type'] = 'add_order_or_watchdog'
-
-    elif data['type'] == 'clear_order':
-        callback_data['type'] = 'clear_order'
-
-    elif data['type'] == 'cost':
-        callback_data['type'] = 'receive_cost'
-
-    elif data['type'] == 'acknowledge_order':
-        callback_data['type'] = 'acknowledge_order'
-
-    callback(callback_data)
-
 def receive(sock):
     data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+    data = ast.literal_eval(data.decode('utf-8'))
     return data
 
 # Running the network listeners
@@ -55,7 +35,7 @@ def listener_private(callback, t):
     while True:
         data = receive(receive_private_socket)
         #print("received private: ", data)
-        callback_wrapper(data, callback)
+        callback(data)
         sleep(0.01)
 
 def listener_broadcast(callback, t):
@@ -66,7 +46,7 @@ def listener_broadcast(callback, t):
     while True:
         data = receive(receive_broadcast_socket)
         #print("received broadcast: ", data)
-        callback_wrapper(data, callback)
+        callback(data)
         sleep(0.01)
 
 # Denne kalles opp fra distributor for å dra igang nettverkslytting.
