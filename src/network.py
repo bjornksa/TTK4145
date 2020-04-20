@@ -23,7 +23,6 @@ def broadcast(data):
 
 # Den her gjør om data fra melding til task og så kjører den callback()-funksjonen fra distributor
 def callback_wrapper(data, callback):
-    data = ast.literal_eval(data.decode('utf-8'))
     callback_data = data
     if data['type'] == 'cost_request':
         callback_data['type'] = 'get_cost'
@@ -44,6 +43,7 @@ def callback_wrapper(data, callback):
 
 def receive(sock):
     data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+    data = ast.literal_eval(data.decode('utf-8'))
     return data
 
 # Running the network listeners
