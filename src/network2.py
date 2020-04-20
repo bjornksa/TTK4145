@@ -53,7 +53,7 @@ class Network_manager():
         self.connections_lock.acquire()
         remote_ID = data['elev_id']
         try:
-            if not remote_ID in self.connections and not remote_ID > self.id: # Only active connections shall be in the dictionary
+            if not remote_ID in self.connections and not remote_ID == self.id: # Only active connections shall be in the dictionary
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect((addres[0], data['tcp_port']))
                 id_dict = {'elev_id': self.id}
@@ -98,61 +98,9 @@ class Network_manager():
 
 
 if __name__ == "__main__":
-    """
-    m1 = Network_manager(lambda x: pprint.pprint(x) , 1)
-    m2 = Network_manager(lambda x: pprint.pprint(x) , 2)
-    m3 = Network_manager(lambda x: pprint.pprint(x) , 3)
-    m4 = Network_manager(lambda x: pprint.pprint(x) , 4)
-    m5 = Network_manager(lambda x: pprint.pprint(x) , 5)
-
-    m1.run()
-    m2.run()
-    m3.run()
-    m4.run()
-    m5.run()
-    """
-
     amount = 5
     managers = [Network_manager(lambda x: pprint.pprint(x) , id) for id in range(amount)]
     [m.run() for m in managers]
 
     sleep(5.0)
     pprint.pprint([(m.id, m.connections) for m in managers])
-
-
-
-"""
-def send():
-    TCP_IP = '127.0.0.1'
-    TCP_PORT = 5005
-    BUFFER_SIZE = 1024
-    MESSAGE = b"Hello, World!"
-
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((TCP_IP, TCP_PORT))
-    s.send(MESSAGE)
-    data = s.recv(BUFFER_SIZE)
-    s.close()
-
-    print(f"received data: {data}")
-
-
-def receive():
-    TCP_IP = '127.0.0.1'
-    TCP_PORT = 5005
-    BUFFER_SIZE = 20  # Normally 1024, but we want fast response
-
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((TCP_IP, TCP_PORT))
-    s.listen(1)
-
-    conn, addr = s.accept()
-    print(f"Connection address: {addr}")
-    while 1:
-        data = conn.recv(BUFFER_SIZE)
-        if not data: break
-        print(type(conn))
-        print(f"received data: {data}")
-        conn.send(data)  # echo
-    conn.close()
-"""
