@@ -31,9 +31,23 @@ def add_task(task):
     if task not in todo.queue:
         todo.put(task)
 
+def add_task_from_message(data):
+    task = data
+    if data['type'] == 'cost_request':
+        task['type'] = 'get_cost'
+    elif data['type'] == 'order':
+        task['type'] = 'add_order_or_watchdog'
+    elif data['type'] == 'clear_order':
+        task['type'] = 'clear_order'
+    elif data['type'] == 'cost':
+        task['type'] = 'receive_cost'
+    elif data['type'] == 'acknowledge_order':
+        task['type'] = 'acknowledge_order'
+    add_task(task)
+
 elevator.run(MY_ID, add_task)
 watchdog.run(add_task)
-network.run(add_task)
+network.run(add_task_from_message)
 
 def order_watcher():
     global ordersAndCosts
