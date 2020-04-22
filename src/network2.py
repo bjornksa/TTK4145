@@ -146,11 +146,10 @@ class Network_manager():
 
 if __name__ == "__main__":
     amount = 5
-    managers = [Network_manager(lambda x: pprint.pprint(x) , id) for id in range(amount)]
+    managers = [Network_manager(lambda x: pprint.pprint(x) , id, verbose=True) for id in range(amount)]
     [m.run() for m in managers]
 
     sleep(5.0)
-    #pprint.pprint([(m.id, m.connections) for m in managers])
     managers[0].send({'some_msg': 'some important msg'})
 
     
