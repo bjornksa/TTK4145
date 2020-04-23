@@ -18,7 +18,9 @@ def broadcast(data):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     data_string = json.dumps(data)
-    s.sendto(data_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
+    for i in range(0,10):
+        s.sendto(data_string.encode(), (BROADCAST_IP, BROADCAST_PORT))
+        sleep(0.01)
     s.close()
 
 def receive(sock):

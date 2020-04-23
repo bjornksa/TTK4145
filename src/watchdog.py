@@ -3,7 +3,7 @@ import time
 
 class Watchdog():
     # Constant limiting how long a watchdog is kept alive. Seconds.
-    TIMEOUT = 30
+    TIMEOUT = 20
 
     def __init__(self, callback):
         self.callback = callback
