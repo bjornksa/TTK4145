@@ -42,7 +42,7 @@ class TCP_listen_thread(threading.Thread):
                 self.alive = False
             finally:
                 pass
-        print(f'thread: {self.own_id} -> {self.remote_id} stopped')
+        print(f'manager: {self.own_id}, thread: {self.own_id} -> {self.remote_id} stopped')
 	    
 
     def stop(self):
@@ -181,12 +181,13 @@ class Network_manager():
         msg_str = json.dumps(message)
         msg_encoded = msg_str.encode()
 
-        for _, value in self.connections.items():
+        for key, value in self.connections.items():
             try: # Shoud make som e logic to handle situations where the connectin has failed
                 value['socket'].send(msg_encoded)
             except: #if exception, kill socket
                 traceback.print_exc()
                 value['listener'].stop()
+                del self.connections[key]
             finally:
                 pass
             
